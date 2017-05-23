@@ -1,0 +1,12 @@
+*.pyo
+*.pyc
+*.sublime-project
+*.sublime-workspace
+.hidden
+.directory
+obsolete
+html_cleaner/forms
+docs/todo.md
+docs/description.html
+html-cleaner-*.zip
+.gitold
