@@ -2,9 +2,16 @@
 .gitattributes export-ignore
 .gitignore export-ignore
 docs export-ignore
-/screenshots export-ignore
-/tools export-ignore
+screenshots export-ignore
+tools export-ignore
 html_cleaner/test.py export-ignore
 obsolete export-ignore
 # Adjust GitHub linguist settings:
 ANKIWEB.md linguist-documentation
+html_cleaner/bleach/* linguist-vendored
+html_cleaner/html5lib/* linguist-vendored
+html_cleaner/htmllaundry/* linguist-vendored
+html_cleaner/LICENSES/* linguist-vendored
+html_cleaner/lxml/* linguist-vendored
+html_cleaner/webencodings/* linguist-vendored
+html_cleaner/six.py linguist-vendored

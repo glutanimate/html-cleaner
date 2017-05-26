@@ -57,6 +57,15 @@ import re
 sys.path.insert(0, os.path.dirname(__file__))
 import bleach
 
+from htmllaundry import cleaners, sanitize
+# Htmllaundry depends on lxml which we cannot ship with this add-on
+# If we can't import htmllaundry we will skip using it further down below
+try:
+    from htmllaundry import cleaners, sanitize
+    LAUNDROMAT = True
+except ImportError:
+    LAUNDROMAT = False
+
 from aqt.qt import *
 from aqt.editor import Editor
 from anki.hooks import wrap
@@ -68,19 +77,58 @@ brtags = (r"(</(div|p|br|li|ul|ol|blockquote|tr|"
             "table|thead|tfoot|tbody|h[1-9]|)>)([^\n])")
 
 
-def cleanHtml(html):
-    cleaned = bleach.clean(html.replace("\n", " "),
+def laundryHtml(html):
+    """Clean using htmllaundry/lxml"""
+    # docs: http://lxml.de/api/lxml.html.clean.Cleaner-class.html
+    cleaner = cleaners.LaundryCleaner(
+                allow_tags = keep_tags,
+                safe_attrs = keep_attrs,
+                page_structure = False,
+                remove_unknown_tags = False,
+                safe_attrs_only = True,
+                add_nofollow = False,
+                scripts = True,
+                javascript = True,
+                comments = True,
+                style = True,
+                links = False,
+                meta = False,
+                processing_instructions = True,
+                frames = False,
+                annoying_tags = True)
+    
+    return sanitize(html, cleaner)
+
+
+def bleachHtml(html):
+    """Clean using bleach/html5lib"""
+    # docs: https://bleach.readthedocs.io/en/latest/clean.html
+    cleaned = bleach.clean(html,
         tags = keep_tags,
         attributes = keep_attrs,
         styles = keep_styles,
-        strip = True
-        )
-    # remove empty style attributes, try to pretty-format tags
-    cleaned = cleaned.replace(' style=""', '').replace("\n", "")
-    cleaned = re.sub(brtags, r"\1\n\3", cleaned)
+        strip = True)
+
     return cleaned
 
+
+def cleanHtml(html):
+    """Clean HTML with cleaners and custom regexes"""
+    html = html.replace("\n", " ")
+    if LAUNDROMAT:
+        html = laundryHtml(html)
+    cleaned = bleachHtml(html)
+
+    # remove empty style attributes, try to pretty-format tags
+    cleaned = cleaned.replace('<div><br></div>', '<br>')
+    cleaned = cleaned.replace(' style=""', '').replace("\n", "")
+    cleaned = re.sub(brtags, r"\1\n\3", cleaned)
+
+    return cleaned
+
+
 def onHtmlClean(self):
+    """Executed on button press"""
     modifiers = self.mw.app.queryKeyboardModifiers()
     shift_and_click = modifiers == Qt.ShiftModifier
     if shift_and_click:
@@ -91,8 +139,11 @@ def onHtmlClean(self):
     html = self.note.fields[n]
     if not html:
         return 
+
     self._fieldUndo = (n, html)
+
     cleaned = cleanHtml(html)
+
     self.note.fields[n] = cleaned
     self.loadNote()
     self.web.setFocus()
@@ -100,6 +151,7 @@ def onHtmlClean(self):
 
 
 def onFieldUndo(self):
+    """Executued on undo toggle"""
     if not hasattr(self, "_fieldUndo") or not self._fieldUndo:
         return
     n, html = self._fieldUndo
@@ -110,15 +162,17 @@ def onFieldUndo(self):
 
 
 def onSetNote(self, note, hide, focus):
+    """Reset undo contents"""
     self._fieldUndo = None
 
 
 def onHtmlPaste(self):
+    """Executed on paste hotkey"""
     mime = self.web.mungeClip(mode=QClipboard.Clipboard)
     html = mime.html()
     if not html:
         return
-    html = cleanHtml(html)
+    cleaned = cleanHtml(html)
     self.web.eval("""
         var pasteHTML = function(html) {
             setFormat("inserthtml", html);
@@ -130,15 +184,15 @@ def onHtmlPaste(self):
             var outHtml = top.innerHTML;
             // get rid of nbsp
             outHtml = outHtml.replace(/&nbsp;/ig, " ");
-            //console.log(`input html: ${html}`);
-            //console.log(`outpt html: ${outHtml}`);
             return outHtml;
         };
         pasteHTML(%s);
-        """ % json.dumps(html))
+        """ % json.dumps(cleaned))
+
 
 def setupButtons(self):
-    self._addButton("CleanHtml", lambda: self.onHtmlClean(),
+    """Add buttons to editor"""
+    self._addButton("clean_html", lambda: self.onHtmlClean(),
         text="cH",
         tip="Clean HTML ({})<br>Undo with shift-click".format(html_clean_hotkey),
         key=html_clean_hotkey)

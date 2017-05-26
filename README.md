@@ -14,6 +14,12 @@ The add-on comes with a button and two hotkeys:
 
 The add-on's HTML processing is highly configurable. All options can be accessed by editing the configuration section of `html_cleaner/main.py`.
 
+## Platform Support
+
+HTML processing is provided by the Bleach library on all platforms. Additionally, the add-on also utilizes the [`htmllaundry` library](https://github.com/wichert/htmllaundry) which can improve the cleaning results under under some circumstances.
+
+`htmllaundry` depends on `lxml` which Anki unfortunately does not ship with. In contrast to the other libraries included in this add-on, `lxml` cannot be easily be packaged for all platforms because it needs to be compiled. For that reason `htmllaundry` support is only available on Windows and Linux right now.
+
 ## License and Credits
 
 *Cloze Overlapper* is *Copyright © 2016-2017 [Aristotelis P.](https://github.com/Glutanimate)*
@@ -24,5 +30,7 @@ This add-on would not not have been possible without the following open-source l
 
 - [Bleach](https://github.com/mozilla/bleach) 2.0.0. Copyright (c) 2014-2017 Mozilla Foundation. Licensed under the Apache License 2.0
 - [html5lib](https://github.com/html5lib/) 0.999999999. Copyright (c) 2006-2013 James Graham and other contributors. Licensed under the MIT license.
+- [htmllaundry](https://github.com/wichert/htmllaundry) 2.1. Copyright (c) 2010-2016 Wichert Akkerman. Licensed under the BSD license.
+- [lxml](http://lxml.de/) 3.7.3. Copyright (c) Infrae. Licensed under the BSD license.
 - [webencodings](https://github.com/gsnedders/python-webencodings) 0.5.1. Copyright (c) 2012-2017 Geoffrey Sneddon. Licensed under the BSD license.
 - [six](https://github.com/benjaminp/six) 1.10.0. Copyright (c) 2010-2015 Benjamin Peterson. Licensed under the MIT license
