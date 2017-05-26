@@ -44,7 +44,7 @@ keep_attrs = [ 'style', 'rev', 'prompt', 'color', 'colspan',
 
 # Styles to preserve in the style attribute
 keep_styles = ["color", "background", "font-weight", "font-family",
-                "font-style", "font-size", "text-decoration"]
+                "font-style", "font-size", "text-decoration", "margin-left"]
 
 ### USER CONFIGURATION END ###
 
@@ -69,7 +69,7 @@ brtags = (r"(</(div|p|br|li|ul|ol|blockquote|tr|"
 
 
 def cleanHtml(html):
-    cleaned = bleach.clean(html.replace("\n", ""),
+    cleaned = bleach.clean(html.replace("\n", " "),
         tags = keep_tags,
         attributes = keep_attrs,
         styles = keep_styles,
