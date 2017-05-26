@@ -16,7 +16,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 
 ## BASIC
 
-html_clean_hotkey = "Alt+H"
+html_clean_hotkey = "Alt+M"
 html_paste_hotkey = "Alt+V"
 
 ## ADVANCED
