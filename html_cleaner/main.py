@@ -46,7 +46,11 @@ keep_attrs = [ 'style', 'rev', 'prompt', 'color', 'colspan',
 keep_styles = ["color", "background", "font-weight", "font-family",
                 "font-style", "font-size", "text-decoration", "margin-left"]
 
+# Whether or not to also process HTML with htmllaundry (if available)
+use_html_laundry = False
+
 ### USER CONFIGURATION END ###
+
 
 import sys
 import os
@@ -57,14 +61,15 @@ import re
 sys.path.insert(0, os.path.dirname(__file__))
 import bleach
 
-from htmllaundry import cleaners, sanitize
-# Htmllaundry depends on lxml which we cannot ship with this add-on
+
+# Htmllaundry depends on lxml which we cannot ship on all platforms
 # If we can't import htmllaundry we will skip using it further down below
 try:
     from htmllaundry import cleaners, sanitize
     LAUNDROMAT = True
 except ImportError:
     LAUNDROMAT = False
+
 
 from aqt.qt import *
 from aqt.editor import Editor
@@ -74,28 +79,29 @@ from anki.utils import json
 
 # insert linebreak after regex match
 brtags = (r"(</(div|p|br|li|ul|ol|blockquote|tr|"
-            "table|thead|tfoot|tbody|h[1-9]|)>)([^\n])")
+    "table|thead|tfoot|tbody|h[1-9])>|<br>)([^\n])")
 
 
 def laundryHtml(html):
     """Clean using htmllaundry/lxml"""
     # docs: http://lxml.de/api/lxml.html.clean.Cleaner-class.html
+
     cleaner = cleaners.LaundryCleaner(
                 allow_tags = keep_tags,
                 safe_attrs = keep_attrs,
-                page_structure = False,
-                remove_unknown_tags = False,
-                safe_attrs_only = True,
-                add_nofollow = False,
-                scripts = True,
-                javascript = True,
-                comments = True,
-                style = True,
-                links = False,
-                meta = False,
                 processing_instructions = True,
-                frames = False,
-                annoying_tags = True)
+                meta = True,
+                scripts = True,
+                comments = True,
+                javascript = True,
+                annoying_tags = True,
+                page_structure=False,
+                remove_unknown_tags=False,
+                safe_attrs_only = False,
+                add_nofollow = False,
+                style = False,
+                links = False,
+                frames = False)
     
     return sanitize(html, cleaner)
 
@@ -103,6 +109,7 @@ def laundryHtml(html):
 def bleachHtml(html):
     """Clean using bleach/html5lib"""
     # docs: https://bleach.readthedocs.io/en/latest/clean.html
+    
     cleaned = bleach.clean(html,
         tags = keep_tags,
         attributes = keep_attrs,
@@ -115,16 +122,23 @@ def bleachHtml(html):
 def cleanHtml(html):
     """Clean HTML with cleaners and custom regexes"""
     html = html.replace("\n", " ")
-    if LAUNDROMAT:
+    # both bleach and htmllaundry eat "<br />"...
+    html = html.replace("<br />", "<br>")
+    
+    if use_html_laundry and LAUNDROMAT:
+        # lxml.clean will munch <br> tags for some reason, even though
+        # they're whitelisted. This is an ugly workaround, but it works.
+        html = html.replace("<br>", "|||LBR|||").replace("</br>", "|||LBR|||")
         html = laundryHtml(html)
-    cleaned = bleachHtml(html)
+        html = html.replace("|||LBR|||", "<br>")
+    html = bleachHtml(html)
 
     # remove empty style attributes, try to pretty-format tags
-    cleaned = cleaned.replace('<div><br></div>', '<br>')
-    cleaned = cleaned.replace(' style=""', '').replace("\n", "")
-    cleaned = re.sub(brtags, r"\1\n\3", cleaned)
+    html = html.replace('<div><br></div>', '<br>')
+    html = html.replace(' style=""', '')
+    html = re.sub(brtags, r"\1\n\3", html)
 
-    return cleaned
+    return html
 
 
 def onHtmlClean(self):
@@ -151,7 +165,7 @@ def onHtmlClean(self):
 
 
 def onFieldUndo(self):
-    """Executued on undo toggle"""
+    """Executed on undo toggle"""
     if not hasattr(self, "_fieldUndo") or not self._fieldUndo:
         return
     n, html = self._fieldUndo

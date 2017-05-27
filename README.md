@@ -16,13 +16,17 @@ The add-on's HTML processing is highly configurable. All options can be accessed
 
 ## Platform Support
 
-HTML processing is provided by the Bleach library on all platforms. Additionally, the add-on also utilizes the [`htmllaundry` library](https://github.com/wichert/htmllaundry) which can improve the cleaning results under under some circumstances.
+HTML processing is provided by the Bleach library on all platforms. The add-on can also be configured to use the [`htmllaundry` library](https://github.com/wichert/htmllaundry) which can improve the cleaning results under under some circumstances.
 
 `htmllaundry` depends on `lxml` which Anki unfortunately does not ship with. In contrast to the other libraries included in this add-on, `lxml` cannot be easily be packaged for all platforms because it needs to be compiled. For that reason `htmllaundry` support is only available on Windows and Linux right now.
 
 ## License and Credits
 
 *Cloze Overlapper* is *Copyright © 2016-2017 [Aristotelis P.](https://github.com/Glutanimate)*
+
+This add-on was developed on a commission by a fellow Anki user. All credit for the original idea goes to them.
+
+I'm always happy for new add-on commissions. If you'd like to hire my services to work an add-on or new feature, please feel free to reach out to me through *ankiglutanimate [αt] gmail . com*.
 
 Licensed under the [GNU AGPL v3](https://www.gnu.org/licenses/agpl.html).
 
