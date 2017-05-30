@@ -6,6 +6,7 @@ screenshots export-ignore
 tools export-ignore
 html_cleaner/test.py export-ignore
 obsolete export-ignore
+Makefile export-ignore
 # Adjust GitHub linguist settings:
 ANKIWEB.md linguist-documentation
 html_cleaner/bleach/* linguist-vendored

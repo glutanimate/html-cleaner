@@ -16,9 +16,15 @@ The add-on's HTML processing is highly configurable. All options can be accessed
 
 ## Platform Support
 
+*htmllaundry availability*
+
 HTML processing is provided by the Bleach library on all platforms. The add-on can also be configured to use the [`htmllaundry` library](https://github.com/wichert/htmllaundry) which can improve the cleaning results under under some circumstances.
 
 `htmllaundry` depends on `lxml` which Anki unfortunately does not ship with. In contrast to the other libraries included in this add-on, `lxml` cannot be easily be packaged for all platforms because it needs to be compiled. For that reason `htmllaundry` support is only available on Windows and Linux right now.
+
+*Issues with symlinks on Linux*
+
+Because HTML cleaner comes with precompiled libraries on Linux, invoking the add-on from a symlinked Windows partition (e.g. NTFS) might lead to a permission error. The reason for this is that the executable bit is sometimes turned off by default for Windows partitions. If you run into this problem you can either look into adjusting your partition mounting settings or moving the add-ons directory to one of your Linux drives.
 
 ## License and Credits
 
