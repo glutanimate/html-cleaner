@@ -64,11 +64,12 @@ import bleach
 
 # Htmllaundry depends on lxml which we cannot ship on all platforms
 # If we can't import htmllaundry we will skip using it further down below
-try:
-    from htmllaundry import cleaners, sanitize
-    LAUNDROMAT = True
-except ImportError:
-    LAUNDROMAT = False
+if use_html_laundry:
+    try:
+        from htmllaundry import cleaners, sanitize
+        LAUNDROMAT = True
+    except ImportError:
+        LAUNDROMAT = False
 
 
 from aqt.qt import *
