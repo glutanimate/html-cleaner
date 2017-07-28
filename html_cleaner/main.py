@@ -74,7 +74,7 @@ if use_html_laundry:
 
 from aqt.qt import *
 from aqt.editor import Editor
-from anki.hooks import wrap
+from anki.hooks import addHook
 from anki.utils import json
 
 
@@ -207,8 +207,7 @@ def onHtmlPaste(self):
 
 def setupButtons(self):
     """Add buttons to editor"""
-    self._addButton("clean_html", lambda: self.onHtmlClean(),
-        text="cH",
+    self._addButton("text-xml", self.onHtmlClean,
         tip="Clean HTML ({})<br>Undo with shift-click".format(html_clean_hotkey),
         key=html_clean_hotkey)
     t = QShortcut(QKeySequence("Shift+"+html_clean_hotkey), self.parentWindow)
@@ -220,4 +219,4 @@ def setupButtons(self):
 Editor.onHtmlPaste = onHtmlPaste
 Editor.onFieldUndo = onFieldUndo
 Editor.onHtmlClean = onHtmlClean
-Editor.setupButtons = wrap(Editor.setupButtons, setupButtons)
+addHook("setupEditorButtons", setupButtons)
