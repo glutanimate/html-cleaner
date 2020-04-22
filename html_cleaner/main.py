@@ -13,6 +13,8 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 """
 from aqt import gui_hooks
 from .config import getUserOption
+from aqt import mw
+from aqt.webview import WebContent
 
 import sys
 import os
@@ -103,6 +105,11 @@ def cleanHtml(html):
 
     return html
 
+    field = note.fields[ord]
+    note.fields[ord] = cleanHtml(field)
+    self._fieldUndo = (ord, html)
+    print(f"field changed: {note.fields[ord] == field}")
+    note.flush()
 
 def onHtmlClean(self):
     """Executed on button press"""
@@ -111,8 +118,11 @@ def onHtmlClean(self):
     if shift_and_click:
         self.onFieldUndo()
         return
-    self.saveNow(lambda:0)
     n = self.currentField
+    self.clean_field(n)
+
+def clean_field(self, n):
+    self.saveNow(lambda:0)
     html = self.note.fields[n]
     if not html:
         return 
@@ -125,6 +135,8 @@ def onHtmlClean(self):
     self.loadNote()
     self.web.setFocus()
     self.web.eval("focusField(%d);" % n)
+
+Editor.clean_field = clean_field
 
 
 def onFieldUndo(self):
@@ -190,3 +202,31 @@ Editor.onFieldUndo = onFieldUndo
 Editor.onHtmlClean = onHtmlClean
 gui_hooks.editor_did_init_buttons.append(setupButtons)
 
+
+mw.addonManager.setWebExports(__name__, r".*(css|js)")
+addon_package = mw.addonManager.addonFromModule(__name__)
+def on_webview_will_set_content(web_content: WebContent, context):
+    if not isinstance(context, Editor):
+        return
+    web_content.js.append(
+        f"/_addons/{addon_package}/js.js")
+gui_hooks.webview_will_set_content.append(on_webview_will_set_content)
+
+def loadNote(self):
+    if not self.note:
+        return
+    self.web.eval(f"setCleanFields()")
+gui_hooks.editor_did_load_note.append(loadNote)
+
+def on_js_message(handled, cmd, editor):
+    if not isinstance(editor, Editor):
+        return handled
+    if cmd.startswith("clean:"):
+        if editor.note is None:
+            return (True, None)
+        idx = int(cmd[len("clean:"):])
+        editor.clean_field(idx)
+        return (True, None)
+    return handled
+
+gui_hooks.webview_did_receive_js_message.append(on_js_message)
