@@ -11,6 +11,7 @@ tags and attributes copied over from apps like Word, etc.
 Copyright: (c) Glutanimate 2017
 License: GNU AGPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 """
+from aqt import gui_hooks
 
 ### USER CONFIGURATION START ###
 
@@ -205,18 +206,22 @@ def onHtmlPaste(self):
         """ % json.dumps(cleaned))
 
 
-def setupButtons(self):
+def setupButtons(righttopbtns, editor):
     """Add buttons to editor"""
-    self._addButton("text-xml", self.onHtmlClean,
-        tip="Clean HTML ({})<br>Undo with shift-click".format(html_clean_hotkey),
-        key=html_clean_hotkey)
-    t = QShortcut(QKeySequence("Shift+"+html_clean_hotkey), self.parentWindow)
-    t.activated.connect(lambda: self.onFieldUndo())
-    t = QShortcut(QKeySequence(html_paste_hotkey), self.parentWindow)
-    t.activated.connect(lambda: self.onHtmlPaste())
+    righttopbtns.append(
+        editor._addButton("clean_html", lambda: editor.onHtmlClean(),
+                          text="cH",
+                          tip="Clean HTML ({})<br>Undo with shift-click".format(html_clean_hotkey),
+                          key=html_clean_hotkey)
+    )
+    t = QShortcut(QKeySequence("Shift+"+html_clean_hotkey), editor.parentWindow)
+    t.activated.connect(lambda: editor.onFieldUndo())
+    t = QShortcut(QKeySequence(html_paste_hotkey), editor.parentWindow)
+    t.activated.connect(lambda: editor.onHtmlPaste())
 
 
 Editor.onHtmlPaste = onHtmlPaste
 Editor.onFieldUndo = onFieldUndo
 Editor.onHtmlClean = onHtmlClean
-addHook("setupEditorButtons", setupButtons)
+gui_hooks.editor_did_init_buttons.append(setupButtons)
+
