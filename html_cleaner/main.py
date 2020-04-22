@@ -111,7 +111,7 @@ def onHtmlClean(self):
     if shift_and_click:
         self.onFieldUndo()
         return
-    self.saveNow()
+    self.saveNow(lambda:0)
     n = self.currentField
     html = self.note.fields[n]
     if not html:
@@ -172,10 +172,12 @@ def setupButtons(righttopbtns, editor):
     html_clean_hotkey = getUserOption("html_clean_hotkey")
     html_paste_hotkey = getUserOption("html_paste_hotkey")
     righttopbtns.append(
-        editor._addButton("clean_html", lambda: editor.onHtmlClean(),
-                          text="cH",
-                          tip="Clean HTML ({})<br>Undo with shift-click".format(html_clean_hotkey),
-                          key=html_clean_hotkey)
+        editor.addButton(icon="clean_html",
+                         cmd="clean_html",
+                         func=onHtmlClean,
+                         label="cH",
+                         tip="Clean HTML ({})<br>Undo with shift-click".format(html_clean_hotkey),
+                         keys=html_clean_hotkey)
     )
     t = QShortcut(QKeySequence("Shift+"+html_clean_hotkey), editor.parentWindow)
     t.activated.connect(lambda: editor.onFieldUndo())
