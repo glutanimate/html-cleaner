@@ -11,4 +11,4 @@ Copyright: (c) Glutanimate 2017
 License: GNU AGPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 """
 
-import html_cleaner.main
+from .html_cleaner import main
