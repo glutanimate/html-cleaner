@@ -1,14 +1,10 @@
 from __future__ import unicode_literals
 import re
-
-import html5lib
-from html5lib.filters.base import Filter
-from html5lib.filters.sanitizer import allowed_protocols
-from html5lib.serializer import HTMLSerializer
+import six
 
 from bleach import callbacks as linkify_callbacks
-from bleach.encoding import force_unicode
-from bleach.utils import alphabetize_attributes
+from bleach import html5lib_shim
+from bleach.utils import alphabetize_attributes, force_unicode
 
 
 #: List of default callbacks
@@ -33,7 +29,7 @@ TLDS = """ac ad ae aero af ag ai al am an ao aq ar arpa as asia at au aw ax az
 TLDS.reverse()
 
 
-def build_url_re(tlds=TLDS, protocols=allowed_protocols):
+def build_url_re(tlds=TLDS, protocols=html5lib_shim.allowed_protocols):
     """Builds the url regex used by linkifier
 
    If you want a different set of tlds or allowed protocols, pass those in
@@ -53,7 +49,7 @@ def build_url_re(tlds=TLDS, protocols=allowed_protocols):
         (?:[/?][^\s\{{\}}\|\\\^\[\]`<>"]*)?
             # /path/zz (excluding "unsafe" chars from RFC 1738,
             # except for # and ~, which happen in practice)
-        """.format('|'.join(protocols), '|'.join(tlds)),
+        """.format('|'.join(sorted(protocols)), '|'.join(sorted(tlds))),
         re.IGNORECASE | re.VERBOSE | re.UNICODE)
 
 
@@ -63,15 +59,31 @@ URL_RE = build_url_re()
 PROTO_RE = re.compile(r'^[\w-]+:/{0,3}', re.IGNORECASE)
 
 
-EMAIL_RE = re.compile(
-    r"""(?<!//)
-    (([-!#$%&'*+/=?^_`{}|~0-9A-Z]+
-        (\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*  # dot-atom
-    |^"([\001-\010\013\014\016-\037!#-\[\]-\177]
-        |\\[\001-\011\013\014\016-\177])*"  # quoted-string
-    )@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6})  # domain
-    """,
-    re.IGNORECASE | re.MULTILINE | re.VERBOSE)
+def build_email_re(tlds=TLDS):
+    """Builds the email regex used by linkifier
+
+   If you want a different set of tlds, pass those in and stomp on the existing ``email_re``::
+
+       from bleach import linkifier
+
+       my_email_re = linkifier.build_email_re(my_tlds_list)
+
+       linker = LinkifyFilter(email_re=my_url_re)
+
+    """
+    # open and closing braces doubled below for format string
+    return re.compile(
+        r"""(?<!//)
+        (([-!#$%&'*+/=?^_`{{}}|~0-9A-Z]+
+            (\.[-!#$%&'*+/=?^_`{{}}|~0-9A-Z]+)*  # dot-atom
+        |^"([\001-\010\013\014\016-\037!#-\[\]-\177]
+            |\\[\001-\011\013\014\016-\177])*"  # quoted-string
+        )@(?:[A-Z0-9](?:[A-Z0-9-]{{0,61}}[A-Z0-9])?\.)+(?:{0}))  # domain
+        """.format('|'.join(tlds)),
+        re.IGNORECASE | re.MULTILINE | re.VERBOSE)
+
+
+EMAIL_RE = build_email_re()
 
 
 class Linker(object):
@@ -89,7 +101,7 @@ class Linker(object):
 
     """
     def __init__(self, callbacks=DEFAULT_CALLBACKS, skip_tags=None, parse_email=False,
-                 url_re=URL_RE, email_re=EMAIL_RE):
+                 url_re=URL_RE, email_re=EMAIL_RE, recognized_tags=html5lib_shim.HTML_TAGS):
         """Creates a Linker instance
 
         :arg list callbacks: list of callbacks to run when adjusting tag attributes;
@@ -105,6 +117,9 @@ class Linker(object):
 
         :arg re email_re: email matching regex
 
+        :arg list-of-strings recognized_tags: the list of tags that linkify knows about;
+            everything else gets escaped
+
         :returns: linkified text as unicode
 
         """
@@ -114,9 +129,16 @@ class Linker(object):
         self.url_re = url_re
         self.email_re = email_re
 
-        self.parser = html5lib.HTMLParser(namespaceHTMLElements=False)
-        self.walker = html5lib.getTreeWalker('etree')
-        self.serializer = HTMLSerializer(
+        # Create a parser/tokenizer that allows all HTML tags and escapes
+        # anything not in that list.
+        self.parser = html5lib_shim.BleachHTMLParser(
+            tags=recognized_tags,
+            strip=False,
+            consume_entities=True,
+            namespaceHTMLElements=False,
+        )
+        self.walker = html5lib_shim.getTreeWalker('etree')
+        self.serializer = html5lib_shim.BleachHTMLSerializer(
             quote_attr_values='always',
             omit_optional_tags=False,
 
@@ -134,11 +156,16 @@ class Linker(object):
 
         :returns: linkified text as unicode
 
+        :raises TypeError: if ``text`` is not a text type
+
         """
+        if not isinstance(text, six.string_types):
+            raise TypeError('argument must be of text type')
+
         text = force_unicode(text)
 
         if not text:
-            return u''
+            return ''
 
         dom = self.parser.parseFragment(text)
         filtered = LinkifyFilter(
@@ -152,7 +179,7 @@ class Linker(object):
         return self.serializer.render(filtered)
 
 
-class LinkifyFilter(Filter):
+class LinkifyFilter(html5lib_shim.Filter):
     """html5lib filter that linkifies text
 
     This will do the following:
@@ -230,7 +257,7 @@ class LinkifyFilter(Filter):
         # linkify callables.
         #
         # I'm not really sure how else to support that ``_text`` fauxttribute and
-        # maintain some modicum of backwards compatability with previous versions
+        # maintain some modicum of backwards compatibility with previous versions
         # of Bleach.
 
         out = []
@@ -239,7 +266,7 @@ class LinkifyFilter(Filter):
             if token_type in ['Characters', 'SpaceCharacters']:
                 out.append(token['data'])
 
-        return u''.join(out)
+        return ''.join(out)
 
     def handle_email_addresses(self, src_iter):
         """Handle email addresses in character tokens"""
@@ -253,31 +280,31 @@ class LinkifyFilter(Filter):
                 for match in self.email_re.finditer(text):
                     if match.start() > end:
                         new_tokens.append(
-                            {u'type': u'Characters', u'data': text[end:match.start()]}
+                            {'type': 'Characters', 'data': text[end:match.start()]}
                         )
 
                     # Run attributes through the callbacks to see what we
                     # should do with this match
                     attrs = {
-                        (None, u'href'): u'mailto:%s' % match.group(0),
-                        u'_text': match.group(0)
+                        (None, 'href'): 'mailto:%s' % match.group(0),
+                        '_text': match.group(0)
                     }
                     attrs = self.apply_callbacks(attrs, True)
 
                     if attrs is None:
                         # Just add the text--but not as a link
                         new_tokens.append(
-                            {u'type': u'Characters', u'data': match.group(0)}
+                            {'type': 'Characters', 'data': match.group(0)}
                         )
 
                     else:
                         # Add an "a" tag for the new link
-                        _text = attrs.pop(u'_text', '')
+                        _text = attrs.pop('_text', '')
                         attrs = alphabetize_attributes(attrs)
                         new_tokens.extend([
-                            {u'type': u'StartTag', u'name': u'a', u'data': attrs},
-                            {u'type': u'Characters', u'data': force_unicode(_text)},
-                            {u'type': u'EndTag', u'name': 'a'}
+                            {'type': 'StartTag', 'name': 'a', 'data': attrs},
+                            {'type': 'Characters', 'data': force_unicode(_text)},
+                            {'type': 'EndTag', 'name': 'a'}
                         ])
                     end = match.end()
 
@@ -285,7 +312,7 @@ class LinkifyFilter(Filter):
                     # Yield the adjusted set of tokens and then continue
                     # through the loop
                     if end < len(text):
-                        new_tokens.append({u'type': u'Characters', u'data': text[end:]})
+                        new_tokens.append({'type': 'Characters', 'data': text[end:]})
 
                     for new_token in new_tokens:
                         yield new_token
@@ -305,12 +332,12 @@ class LinkifyFilter(Filter):
         while fragment:
             # Try removing ( from the beginning and, if it's balanced, from the
             # end, too
-            if fragment.startswith(u'('):
-                prefix = prefix + u'('
+            if fragment.startswith('('):
+                prefix = prefix + '('
                 fragment = fragment[1:]
 
-                if fragment.endswith(u')'):
-                    suffix = u')' + suffix
+                if fragment.endswith(')'):
+                    suffix = ')' + suffix
                     fragment = fragment[:-1]
                 continue
 
@@ -320,21 +347,21 @@ class LinkifyFilter(Filter):
             #
             #     "i looked at the site (at http://example.com)"
 
-            if fragment.endswith(u')') and u'(' not in fragment:
+            if fragment.endswith(')') and '(' not in fragment:
                 fragment = fragment[:-1]
-                suffix = u')' + suffix
+                suffix = ')' + suffix
                 continue
 
             # Handle commas
-            if fragment.endswith(u','):
+            if fragment.endswith(','):
                 fragment = fragment[:-1]
-                suffix = u',' + suffix
+                suffix = ',' + suffix
                 continue
 
             # Handle periods
-            if fragment.endswith(u'.'):
+            if fragment.endswith('.'):
                 fragment = fragment[:-1]
-                suffix = u'.' + suffix
+                suffix = '.' + suffix
                 continue
 
             # Nothing matched, so we're done
@@ -344,7 +371,17 @@ class LinkifyFilter(Filter):
 
     def handle_links(self, src_iter):
         """Handle links in character tokens"""
+        in_a = False  # happens, if parse_email=True and if a mail was found
         for token in src_iter:
+            if in_a:
+                if token['type'] == 'EndTag' and token['name'] == 'a':
+                    in_a = False
+                yield token
+                continue
+            elif token['type'] == 'StartTag' and token['name'] == 'a':
+                in_a = True
+                yield token
+                continue
             if token['type'] == 'Characters':
                 text = token['data']
                 new_tokens = []
@@ -353,7 +390,7 @@ class LinkifyFilter(Filter):
                 for match in self.url_re.finditer(text):
                     if match.start() > end:
                         new_tokens.append(
-                            {u'type': u'Characters', u'data': text[end:match.start()]}
+                            {'type': 'Characters', 'data': text[end:match.start()]}
                         )
 
                     url = match.group(0)
@@ -367,39 +404,39 @@ class LinkifyFilter(Filter):
                     if PROTO_RE.search(url):
                         href = url
                     else:
-                        href = u'http://%s' % url
+                        href = 'http://%s' % url
 
                     attrs = {
-                        (None, u'href'): href,
-                        u'_text': url
+                        (None, 'href'): href,
+                        '_text': url
                     }
                     attrs = self.apply_callbacks(attrs, True)
 
                     if attrs is None:
                         # Just add the text
                         new_tokens.append(
-                            {u'type': u'Characters', u'data': prefix + url + suffix}
+                            {'type': 'Characters', 'data': prefix + url + suffix}
                         )
 
                     else:
                         # Add the "a" tag!
                         if prefix:
                             new_tokens.append(
-                                {u'type': u'Characters', u'data': prefix}
+                                {'type': 'Characters', 'data': prefix}
                             )
 
-                        _text = attrs.pop(u'_text', '')
+                        _text = attrs.pop('_text', '')
                         attrs = alphabetize_attributes(attrs)
 
                         new_tokens.extend([
-                            {u'type': u'StartTag', u'name': u'a', u'data': attrs},
-                            {u'type': u'Characters', u'data': force_unicode(_text)},
-                            {u'type': u'EndTag', u'name': 'a'},
+                            {'type': 'StartTag', 'name': 'a', 'data': attrs},
+                            {'type': 'Characters', 'data': force_unicode(_text)},
+                            {'type': 'EndTag', 'name': 'a'},
                         ])
 
                         if suffix:
                             new_tokens.append(
-                                {u'type': u'Characters', u'data': suffix}
+                                {'type': 'Characters', 'data': suffix}
                             )
 
                     end = match.end()
@@ -408,7 +445,7 @@ class LinkifyFilter(Filter):
                     # Yield the adjusted set of tokens and then continue
                     # through the loop
                     if end < len(text):
-                        new_tokens.append({u'type': u'Characters', u'data': text[end:]})
+                        new_tokens.append({'type': 'Characters', 'data': text[end:]})
 
                     for new_token in new_tokens:
                         yield new_token
@@ -481,13 +518,11 @@ class LinkifyFilter(Filter):
                     # the tokens we're going to yield
                     in_a = False
                     token_buffer = []
-                    continue
-
                 else:
                     token_buffer.append(token)
-                    continue
+                continue
 
-            elif token['type'] in ['StartTag', 'EmptyTag']:
+            if token['type'] in ['StartTag', 'EmptyTag']:
                 if token['name'] in self.skip_tags:
                     # Skip tags start a "special mode" where we don't linkify
                     # anything until the end tag.
