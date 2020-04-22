@@ -12,46 +12,7 @@ Copyright: (c) Glutanimate 2017
 License: GNU AGPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 """
 from aqt import gui_hooks
-
-### USER CONFIGURATION START ###
-
-## BASIC
-
-html_clean_hotkey = "Alt+M"
-html_paste_hotkey = "Alt+V"
-
-## ADVANCED
-
-# Html tags to preserve
-keep_tags = ['blockquote', 'a', 'img', 'em', 'b', 'p', 'strong',
-        'h1', 'h2', 'h3', 'h4', 'h5', 'ul', 'ol', 'li', 'sub', 'sup',
-        'abbr', 'acronym', 'dl', 'dt', 'dd', 'cite',
-        'dft', 'br', 'table', 'tr', 'td', 'th', 'thead',
-        'tbody', 'tfoot', 'div', 'span', 'u', 'i']
-
-# Tag attributes to preserve
-keep_attrs = [ 'style', 'rev', 'prompt', 'color', 'colspan', 
-        'usemap', 'cols', 'accept', 'datetime', 'char', 
-        'accept-charset', 'shape', 'href', 'hreflang', 
-        'selected', 'frame', 'type', 'alt', 'nowrap', 
-        'border', 'axis', 'compact', 'rows', 'checked',
-        'for', 'start', 'hspace', 'charset', 'ismap', 'label',
-        'target', 'method', 'readonly', 'rel', 'valign', 'scope',
-        'size', 'cellspacing', 'cite', 'media', 'multiple', 'src',
-        'rules', 'nohref', 'action', 'rowspan', 'abbr', 'span', 'height',
-        'enctype', 'lang', 'disabled', 'name', 'charoff', 'clear', 'summary',
-        'value', 'longdesc', 'headers', 'vspace', 'noshade', 'coords', 'width',
-        'maxlength', 'cellpadding', 'title', 'align', 'dir', 'tabindex']
-
-# Styles to preserve in the style attribute
-keep_styles = ["color", "background", "font-weight", "font-family",
-                "font-style", "font-size", "text-decoration", "margin-left"]
-
-# Whether or not to also process HTML with htmllaundry (if available)
-use_html_laundry = False
-
-### USER CONFIGURATION END ###
-
+from .config import getUserOption
 
 import sys
 import os
@@ -65,7 +26,7 @@ import bleach
 
 # Htmllaundry depends on lxml which we cannot ship on all platforms
 # If we can't import htmllaundry we will skip using it further down below
-if use_html_laundry:
+if getUserOption("use_html_laundry"):
     try:
         from htmllaundry import cleaners, sanitize
         LAUNDROMAT = True
@@ -89,8 +50,8 @@ def laundryHtml(html):
     # docs: http://lxml.de/api/lxml.html.clean.Cleaner-class.html
 
     cleaner = cleaners.LaundryCleaner(
-                allow_tags = keep_tags,
-                safe_attrs = keep_attrs,
+                allow_tags = getUserOption("keep_tags"),
+                safe_attrs = getUserOption("keep_attrs"),
                 processing_instructions = True,
                 meta = True,
                 scripts = True,
@@ -113,9 +74,9 @@ def bleachHtml(html):
     # docs: https://bleach.readthedocs.io/en/latest/clean.html
     
     cleaned = bleach.clean(html,
-        tags = keep_tags,
-        attributes = keep_attrs,
-        styles = keep_styles,
+        tags = getUserOption("keep_tags"),
+        attributes = getUserOption("keep_attrs"),
+        styles = getUserOption("keep_styles"),
         strip = True)
 
     return cleaned
@@ -127,7 +88,7 @@ def cleanHtml(html):
     # both bleach and htmllaundry eat "<br />"...
     html = html.replace("<br />", "<br>")
     
-    if use_html_laundry and LAUNDROMAT:
+    if getUserOption("use_html_laundry") and LAUNDROMAT:
         # lxml.clean will munch <br> tags for some reason, even though
         # they're whitelisted. This is an ugly workaround, but it works.
         html = html.replace("<br>", "|||LBR|||").replace("</br>", "|||LBR|||")
@@ -208,6 +169,8 @@ def onHtmlPaste(self):
 
 def setupButtons(righttopbtns, editor):
     """Add buttons to editor"""
+    html_clean_hotkey = getUserOption("html_clean_hotkey")
+    html_paste_hotkey = getUserOption("html_paste_hotkey")
     righttopbtns.append(
         editor._addButton("clean_html", lambda: editor.onHtmlClean(),
                           text="cH",
