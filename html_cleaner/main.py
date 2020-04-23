@@ -113,13 +113,21 @@ def cleanHtml(html):
 
 def onHtmlClean(self):
     """Executed on button press"""
+    self.saveNow(lambda:0)
     modifiers = self.mw.app.queryKeyboardModifiers()
     shift_and_click = modifiers == Qt.ShiftModifier
     if shift_and_click:
         self.onFieldUndo()
         return
-    n = self.currentField
-    self.clean_field(n)
+    self._fieldUndo = Nnoe
+    for n in range(len(self.note.fields)):
+        if not self.note.fields[n]:
+            continue
+        self.note.fields[n] = cleanHtml(self.note.fields[n])
+    self.note.flush()
+    self.loadNote()
+    self.web.setFocus()
+    self.web.eval("focusField(%d);" % n)
 
 def clean_field(self, n):
     self.saveNow(lambda:0)
