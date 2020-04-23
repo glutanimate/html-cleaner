@@ -17,6 +17,7 @@ from aqt import mw
 from aqt.webview import WebContent
 from .clean import cleanHtml
 from aqt.editor import Editor
+from aqt.qt import QKeySequence, QShortcut
 
 
 

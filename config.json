@@ -1,5 +1,6 @@
 {
   "html_clean_hotkey":"Alt+M",
+  "html_batch_clean_hotkey":"CTRL+Alt+M",
   "html_paste_hotkey": "Alt+V",
   "keep_tags": ["blockquote", "a", "img", "em", "b", "p", "strong",
         "h1", "h2", "h3", "h4", "h5", "ul", "ol", "li", "sub", "sup",
