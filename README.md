@@ -28,7 +28,10 @@ Because HTML cleaner comes with precompiled libraries on Linux, invoking the add
 
 ## License and Credits
 
-*Cloze Overlapper* is *Copyright © 2016-2017 [Aristotelis P.](https://github.com/Glutanimate)*
+*HTML Cleaner* is
+
+- *Copyright © 2016-2017 [Aristotelis P.](https://github.com/Glutanimate)*
+- *Copyright © 2020 [Arthur Milchior](arthur@milchior.fr)*
 
 This add-on was developed on a commission by a fellow Anki user. All credit for the original idea goes to them.
 
