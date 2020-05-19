@@ -1,9 +1,21 @@
 from aqt import gui_hooks
 from aqt.browser import Browser
+from aqt.qt import (
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QHBoxLayout,
+    QKeySequence,
+    QLabel,
+    Qt,
+    QVBoxLayout,
+    Shortcut,
+)
 from aqt.utils import tooltip
-from aqt.qt import QLabel, QDialog, QHBoxLayout, QDialogButtonBox, QComboBox, QVBoxLayout, QKeySequence, QShortcut, Qt
+
 from .clean import cleanHtml
 from .config import getUserOption
+
 
 class BatchCleanDialog(QDialog):
     """Browser batch editing dialog"""
@@ -82,6 +94,7 @@ def onBatchClean(browser):
         return
     dialog = BatchCleanDialog(browser, nids)
     dialog.exec_()
+
 
 def add_menu(browser):
     menu = browser.form.menuEdit

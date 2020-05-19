@@ -1,4 +1,3 @@
-from .config import getUserOption
 import sys
 import os
 import re
@@ -6,18 +5,18 @@ import re
 # import modules from local path
 # (insert needed in order to skip system packages)
 sys.path.insert(0, os.path.dirname(__file__))
-
-
+import bleach
 
 from aqt.qt import *
 from anki.hooks import wrap
 from anki.utils import json
 
+from .config import getUserOption
+
 
 # insert linebreak after regex match
 brtags = (r"(</(div|p|br|li|ul|ol|blockquote|tr|"
     "table|thead|tfoot|tbody|h[1-9])>|<br>)([^\n])")
-import bleach
 
 
 def laundryHtml(html):
@@ -56,6 +55,7 @@ def bleachHtml(html):
 
     return cleaned
 
+
 # Htmllaundry depends on lxml which we cannot ship on all platforms
 # If we can't import htmllaundry we will skip using it further down below
 if getUserOption("use_html_laundry"):
@@ -64,6 +64,7 @@ if getUserOption("use_html_laundry"):
         LAUNDROMAT = True
     except ImportError:
         LAUNDROMAT = False
+
 
 def cleanHtml(html):
     """Clean HTML with cleaners and custom regexes"""
