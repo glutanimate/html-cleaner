@@ -20,8 +20,8 @@ from aqt.editor import Editor
 from aqt.webview import WebContent
 from aqt.qt import (
     QClipboard,
-    QKeySequence, 
-    QShortcut, 
+    QKeySequence,
+    QShortcut,
     Qt,
 )
 
@@ -29,11 +29,9 @@ from .clean import cleanHtml
 from .config import getUserOption
 
 
-
-
 def onHtmlClean(self):
     """Executed on button press"""
-    self.saveNow(lambda:0)
+    self.saveNow(lambda: 0)
     modifiers = self.mw.app.queryKeyboardModifiers()
     shift_and_click = modifiers == Qt.ShiftModifier
     if shift_and_click:
@@ -48,14 +46,16 @@ def onHtmlClean(self):
     self.loadNote()
     self.web.setFocus()
     self.web.eval("focusField(%d);" % n)
+
+
 Editor.onHtmlClean = onHtmlClean
 
 
 def clean_field(self, n):
-    self.saveNow(lambda:0)
+    self.saveNow(lambda: 0)
     html = self.note.fields[n]
     if not html:
-        return 
+        return
 
     self._fieldUndo = (n, html)
 
@@ -65,6 +65,8 @@ def clean_field(self, n):
     self.loadNote()
     self.web.setFocus()
     self.web.eval("focusField(%d);" % n)
+
+
 Editor.clean_field = clean_field
 
 
@@ -77,6 +79,8 @@ def onFieldUndo(self):
     self.loadNote()
     self.web.setFocus()
     self.web.eval("focusField(%d);" % n)
+
+
 Editor.onFieldUndo = onFieldUndo
 
 
@@ -92,7 +96,8 @@ def onHtmlPaste(self):
     if not html:
         return
     cleaned = cleanHtml(html)
-    self.web.eval("""
+    self.web.eval(
+        """
         var pasteHTML = function(html) {
             setFormat("inserthtml", html);
         };
@@ -106,7 +111,11 @@ def onHtmlPaste(self):
             return outHtml;
         };
         pasteHTML(%s);
-        """ % json.dumps(cleaned))
+        """
+        % json.dumps(cleaned)
+    )
+
+
 Editor.onHtmlPaste = onHtmlPaste
 
 
@@ -115,27 +124,34 @@ def setupButtons(righttopbtns, editor):
     html_clean_hotkey = getUserOption("html_clean_hotkey")
     html_paste_hotkey = getUserOption("html_paste_hotkey")
     righttopbtns.append(
-        editor.addButton(icon="clean_html",
-                         cmd="clean_html",
-                         func=onHtmlClean,
-                         label="cH",
-                         tip="Clean HTML ({})".format(html_clean_hotkey),
-                         keys=html_clean_hotkey)
+        editor.addButton(
+            icon="clean_html",
+            cmd="clean_html",
+            func=onHtmlClean,
+            label="cH",
+            tip="Clean HTML ({})".format(html_clean_hotkey),
+            keys=html_clean_hotkey,
+        )
     )
-    t = QShortcut(QKeySequence("Shift+"+html_clean_hotkey), editor.parentWindow)
+    t = QShortcut(QKeySequence("Shift+" + html_clean_hotkey), editor.parentWindow)
     t.activated.connect(lambda: editor.onFieldUndo())
     t = QShortcut(QKeySequence(html_paste_hotkey), editor.parentWindow)
     t.activated.connect(lambda: editor.onHtmlPaste())
+
+
 gui_hooks.editor_did_init_buttons.append(setupButtons)
 
 
 mw.addonManager.setWebExports(__name__, r".*(css|js)")
 addon_package = mw.addonManager.addonFromModule(__name__)
+
+
 def on_webview_will_set_content(web_content: WebContent, context):
     if not isinstance(context, Editor):
         return
-    web_content.js.append(
-        f"/_addons/{addon_package}/js.js")
+    web_content.js.append(f"/_addons/{addon_package}/js.js")
+
+
 gui_hooks.webview_will_set_content.append(on_webview_will_set_content)
 
 
@@ -143,6 +159,8 @@ def loadNote(self):
     if not self.note:
         return
     self.web.eval(f"setCleanFields()")
+
+
 gui_hooks.editor_did_load_note.append(loadNote)
 
 
@@ -152,8 +170,10 @@ def on_js_message(handled, cmd, editor):
     if cmd.startswith("clean:"):
         if editor.note is None:
             return (True, None)
-        idx = int(cmd[len("clean:"):])
+        idx = int(cmd[len("clean:") :])
         editor.clean_field(idx)
         return (True, None)
     return handled
+
+
 gui_hooks.webview_did_receive_js_message.append(on_js_message)

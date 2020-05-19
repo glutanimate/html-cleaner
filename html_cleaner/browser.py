@@ -36,8 +36,11 @@ class BatchCleanDialog(QDialog):
         f_hbox.addWidget(self.fsel)
         f_hbox.setAlignment(Qt.AlignLeft)
 
-        button_box = QDialogButtonBox(QDialogButtonBox.Ok|QDialogButtonBox.Cancel, orientation=Qt.Horizontal, parent=self)
-
+        button_box = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
+            orientation=Qt.Horizontal,
+            parent=self,
+        )
 
         bottom_hbox = QHBoxLayout()
         bottom_hbox.addWidget(button_box)
@@ -99,7 +102,7 @@ def onBatchClean(browser):
 def add_menu(browser):
     menu = browser.form.menuEdit
     menu.addSeparator()
-    a = menu.addAction('Batch clean HTML...')
+    a = menu.addAction("Batch clean HTML...")
     a.setShortcut(QKeySequence(getUserOption("html_batch_clean_hotkey")))
     a.triggered.connect(lambda _, b=browser: onBatchClean(b))
 
