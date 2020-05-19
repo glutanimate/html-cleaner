@@ -11,14 +11,22 @@ tags and attributes copied over from apps like Word, etc.
 Copyright: (c) Glutanimate 2017
 License: GNU AGPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 """
-from aqt import gui_hooks
-from .config import getUserOption
-from aqt import mw
-from aqt.webview import WebContent
-from .clean import cleanHtml
-from aqt.editor import Editor
-from aqt.qt import QKeySequence, QShortcut, Qt
 
+import json
+
+from aqt import gui_hooks
+from aqt import mw
+from aqt.editor import Editor
+from aqt.webview import WebContent
+from aqt.qt import (
+    QClipboard,
+    QKeySequence, 
+    QShortcut, 
+    Qt,
+)
+
+from .clean import cleanHtml
+from .config import getUserOption
 
 
 
