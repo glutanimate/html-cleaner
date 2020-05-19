@@ -48,6 +48,8 @@ def onHtmlClean(self):
     self.loadNote()
     self.web.setFocus()
     self.web.eval("focusField(%d);" % n)
+Editor.onHtmlClean = onHtmlClean
+
 
 def clean_field(self, n):
     self.saveNow(lambda:0)
@@ -63,7 +65,6 @@ def clean_field(self, n):
     self.loadNote()
     self.web.setFocus()
     self.web.eval("focusField(%d);" % n)
-
 Editor.clean_field = clean_field
 
 
@@ -76,6 +77,7 @@ def onFieldUndo(self):
     self.loadNote()
     self.web.setFocus()
     self.web.eval("focusField(%d);" % n)
+Editor.onFieldUndo = onFieldUndo
 
 
 def onSetNote(self, note, hide, focus):
@@ -105,6 +107,7 @@ def onHtmlPaste(self):
         };
         pasteHTML(%s);
         """ % json.dumps(cleaned))
+Editor.onHtmlPaste = onHtmlPaste
 
 
 def setupButtons(righttopbtns, editor):
@@ -123,11 +126,6 @@ def setupButtons(righttopbtns, editor):
     t.activated.connect(lambda: editor.onFieldUndo())
     t = QShortcut(QKeySequence(html_paste_hotkey), editor.parentWindow)
     t.activated.connect(lambda: editor.onHtmlPaste())
-
-
-Editor.onHtmlPaste = onHtmlPaste
-Editor.onFieldUndo = onFieldUndo
-Editor.onHtmlClean = onHtmlClean
 gui_hooks.editor_did_init_buttons.append(setupButtons)
 
 
@@ -140,11 +138,13 @@ def on_webview_will_set_content(web_content: WebContent, context):
         f"/_addons/{addon_package}/js.js")
 gui_hooks.webview_will_set_content.append(on_webview_will_set_content)
 
+
 def loadNote(self):
     if not self.note:
         return
     self.web.eval(f"setCleanFields()")
 gui_hooks.editor_did_load_note.append(loadNote)
+
 
 def on_js_message(handled, cmd, editor):
     if not isinstance(editor, Editor):
@@ -156,5 +156,4 @@ def on_js_message(handled, cmd, editor):
         editor.clean_field(idx)
         return (True, None)
     return handled
-
 gui_hooks.webview_did_receive_js_message.append(on_js_message)
