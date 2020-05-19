@@ -125,11 +125,11 @@ def setupButtons(righttopbtns, editor):
     html_paste_hotkey = getUserOption("html_paste_hotkey")
     righttopbtns.append(
         editor.addButton(
-            icon="clean_html",
+            icon="",
             cmd="clean_html",
             func=onHtmlClean,
             label="cH",
-            tip="Clean HTML ({})".format(html_clean_hotkey),
+            tip="Clean HTML in all fields({})".format(html_clean_hotkey),
             keys=html_clean_hotkey,
         )
     )
