@@ -17,7 +17,7 @@ from aqt import mw
 from aqt.webview import WebContent
 from .clean import cleanHtml
 from aqt.editor import Editor
-from aqt.qt import QKeySequence, QShortcut
+from aqt.qt import QKeySequence, QShortcut, Qt
 
 
 
@@ -31,7 +31,7 @@ def onHtmlClean(self):
     if shift_and_click:
         self.onFieldUndo()
         return
-    self._fieldUndo = Nnoe
+    self._fieldUndo = None
     for n in range(len(self.note.fields)):
         if not self.note.fields[n]:
             continue
