@@ -9,7 +9,7 @@ from aqt.qt import (
     QLabel,
     Qt,
     QVBoxLayout,
-    Shortcut,
+    QShortcut,
 )
 from aqt.utils import tooltip
 
