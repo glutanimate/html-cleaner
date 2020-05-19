@@ -1,5 +1,5 @@
 {
-    "html_batch_clean_hotkey": "CTRL+Alt+M",
+    "html_batch_clean_hotkey": "Ctrl+Alt+M",
     "html_clean_hotkey": "Alt+M",
     "html_paste_hotkey": "Alt+V",
     "keep_attrs": [
