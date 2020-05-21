@@ -1,6 +1,9 @@
+from anki.utils import stripHTML
+
 from aqt import gui_hooks
 from aqt.browser import Browser
 from aqt.qt import (
+    QCheckBox,
     QComboBox,
     QDialog,
     QDialogButtonBox,
@@ -31,9 +34,12 @@ class BatchCleanDialog(QDialog):
         self.fsel = QComboBox()
         fields = self._getFields()
         self.fsel.addItems(fields)
+        self.cb = QCheckBox()
+        self.cb.setText("transform to plain text")
         f_hbox = QHBoxLayout()
         f_hbox.addWidget(flabel)
         f_hbox.addWidget(self.fsel)
+        f_hbox.addWidget(self.cb)
         f_hbox.setAlignment(Qt.AlignLeft)
 
         button_box = QDialogButtonBox(
@@ -67,6 +73,10 @@ class BatchCleanDialog(QDialog):
         self.close()
 
     def accept(self):
+        if self.cb.isChecked():
+            func = stripHTML
+        else:
+            func = cleanHtml
         self.browser.mw.checkpoint("batch edit")
         self.browser.mw.progress.start()
         self.browser.model.beginReset()
@@ -74,7 +84,7 @@ class BatchCleanDialog(QDialog):
         cnt = 0
         for nid in self.nids:
             note = self.browser.mw.col.getNote(nid)
-            cleaned = cleanHtml(note[fld_name])
+            cleaned = func(note[fld_name])
             if cleaned != note[fld_name]:
                 cnt += 1
                 note[fld_name] = cleaned
