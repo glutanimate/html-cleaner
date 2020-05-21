@@ -29,14 +29,8 @@ from .clean import cleanHtml
 from .config import getUserOption
 
 
-def onHtmlClean(self):
-    """Executed on button press"""
+def onHtmlCleanAll(self):
     self.saveNow(lambda: 0)
-    modifiers = self.mw.app.queryKeyboardModifiers()
-    shift_and_click = modifiers == Qt.ShiftModifier
-    if shift_and_click:
-        self.onFieldUndo()
-        return
     self._fieldUndo = None
     for n in range(len(self.note.fields)):
         if not self.note.fields[n]:
@@ -48,7 +42,7 @@ def onHtmlClean(self):
     self.web.eval("focusField(%d);" % n)
 
 
-Editor.onHtmlClean = onHtmlClean
+Editor.onHtmlCleanAll = onHtmlCleanAll
 
 
 def clean_field(self, n):
@@ -68,6 +62,17 @@ def clean_field(self, n):
 
 
 Editor.clean_field = clean_field
+
+
+def clean_field_helper(editor):
+    modifiers = editor.mw.app.queryKeyboardModifiers()
+    shift_and_click = modifiers == Qt.ShiftModifier
+    if shift_and_click:
+        editor.onFieldUndo()
+        return
+    n = editor.currentField
+    if isinstance(n, int):
+        clean_field(editor, n)
 
 
 def onFieldUndo(self):
@@ -127,14 +132,18 @@ def setupButtons(righttopbtns, editor):
         editor.addButton(
             icon="",
             cmd="clean_html",
-            func=onHtmlClean,
+            func=lambda e=editor: clean_field_helper(e),
             label="cH",
-            tip="Clean HTML in all fields({})".format(html_clean_hotkey),
+            tip="Clean HTML in this field({})".format(html_clean_hotkey),
             keys=html_clean_hotkey,
         )
     )
     t = QShortcut(QKeySequence("Shift+" + html_clean_hotkey), editor.parentWindow)
     t.activated.connect(lambda: editor.onFieldUndo())
+    cut = getUserOption("html_batch_clean_hotkey")
+    if cut:
+        t = QShortcut(QKeySequence(cut), editor.parentWindow)
+        t.activated.connect(lambda: editor.onHtmlCleanAll())
     t = QShortcut(QKeySequence(html_paste_hotkey), editor.parentWindow)
     t.activated.connect(lambda: editor.onHtmlPaste())
 
