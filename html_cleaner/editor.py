@@ -19,7 +19,7 @@ import json
 
 from bs4 import BeautifulSoup
 
-from anki.utils import stripHTML, isLin, isWin
+from anki.utils import stripHTML
 
 from aqt import gui_hooks
 from aqt import mw
