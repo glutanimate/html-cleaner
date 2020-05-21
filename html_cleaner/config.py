@@ -5,11 +5,16 @@ from aqt.utils import showWarning
 
 
 userOption = None
-addon = mw.addonManager.addonFromModule(__name__)
-default = mw.addonManager.addonConfigDefaults(__name__)
+foldername = mw.addonManager.addonFromModule(__name__)
+default = mw.addonManager.addonConfigDefaults(foldername)
+
 
 def _getUserOption():
     global userOption
+    # workaround: for occasional error "'NoneType' object is not subscriptable" in  current[key] = current_default[key] 
+    global default
+    if default is None:
+        default = mw.addonManager.addonConfigDefaults(foldername)
     if userOption is None:
         userOption = mw.addonManager.getConfig(__name__)
 
