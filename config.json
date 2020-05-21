@@ -1,7 +1,14 @@
 {
-    "html_batch_clean_hotkey": "Ctrl+Alt+M",
-    "html_clean_hotkey": "Alt+M",
-    "html_paste_hotkey": "Alt+V",
+    "Shortcut browser: batch clean": "Ctrl+Alt+M",
+    "Shortcut editor: Menu show": "Alt+M",
+    "Shortcut editor: Menu wider fields": true,
+    "Shortcut editor: clean current field": "",
+    "Shortcut editor: clean all fields": "Ctrl+Alt+M",
+    "Shortcut editor: current field UNDO": "",
+    "Shortcut editor: transform current field to plain text": "Ctrl+Meta+M",
+    "Shortcut editor: transform all fields to plain text": "",
+    "Shortcut editor: paste cleaned html": "Alt+V",
+    "Use_html_laundry": false,
     "keep_attrs": [
         "abbr",
         "accept-charset",
@@ -120,6 +127,5 @@
         "tr",
         "u",
         "ul"
-    ],
-    "use_html_laundry": false
+    ]
 }

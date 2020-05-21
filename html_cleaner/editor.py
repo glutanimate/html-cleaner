@@ -9,10 +9,17 @@ Cleans and minifies HTML content of current field, removing extraneous
 tags and attributes copied over from apps like Word, etc.
 
 Copyright: (c) Glutanimate 2017
+           (c) Arthur Milchior 2020
+           (c) ijgnd 2020
+
 License: GNU AGPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 """
 
 import json
+
+from bs4 import BeautifulSoup
+
+from anki.utils import stripHTML, isLin, isWin
 
 from aqt import gui_hooks
 from aqt import mw
@@ -20,59 +27,92 @@ from aqt.editor import Editor
 from aqt.webview import WebContent
 from aqt.qt import (
     QClipboard,
+    QCursor,
     QKeySequence,
+    QMenu,
     QShortcut,
     Qt,
 )
+from aqt.utils import askUser
 
 from .clean import cleanHtml
 from .config import getUserOption
 
 
-def onHtmlCleanAll(self):
-    self.saveNow(lambda: 0)
+mw.addonManager.setWebExports(__name__, r".*(css|js)")
+addon_package = mw.addonManager.addonFromModule(__name__)
+
+
+def process_all_fields(self, func):
     self._fieldUndo = None
     for n in range(len(self.note.fields)):
         if not self.note.fields[n]:
             continue
-        self.note.fields[n] = cleanHtml(self.note.fields[n])
+        self.note.fields[n] = func(self.note.fields[n])
     self.note.flush()
     self.loadNote()
     self.web.setFocus()
     self.web.eval("focusField(%d);" % n)
 
 
-Editor.onHtmlCleanAll = onHtmlCleanAll
+def onHtmlCleanAll(self):
+    msg = "Clean ALL html fields of this note. This action cannot be undone. Proceed?"
+    if not askUser(msg):
+        return
+    self.saveNow(lambda: 0)
+    process_all_fields(self, cleanHtml)
 
 
-def clean_field(self, n):
+def process_field(self, n, func):
     self.saveNow(lambda: 0)
     html = self.note.fields[n]
     if not html:
         return
-
     self._fieldUndo = (n, html)
-
-    cleaned = cleanHtml(html)
-
+    cleaned = func(html)
     self.note.fields[n] = cleaned
     self.loadNote()
     self.web.setFocus()
     self.web.eval("focusField(%d);" % n)
 
 
-Editor.clean_field = clean_field
+def clean_field(self, n):
+    self.saveNow(lambda: 0)
+    process_field(self, n, cleanHtml)
 
 
 def clean_field_helper(editor):
-    modifiers = editor.mw.app.queryKeyboardModifiers()
-    shift_and_click = modifiers == Qt.ShiftModifier
-    if shift_and_click:
-        editor.onFieldUndo()
-        return
     n = editor.currentField
     if isinstance(n, int):
         clean_field(editor, n)
+
+
+# TODO: in some cases gets plain text with linesbreaks from clip.mimeData().text()
+# whereas Anki's stripHTML and the following remove_html_with_bs4 fail
+# not better than striphtml
+def remove_html_with_bs4(code):
+    soup = BeautifulSoup(code, "html.parser")
+    out =  soup.text
+    return out
+
+
+def tranform_all(self):
+    msg = "Transform ALL fields of this note to plain text. This action cannot be undone. Proceed?"
+    if not askUser(msg):
+        return
+    self.saveNow(lambda: 0)
+    process_all_fields(self, stripHTML)
+
+
+def transform_field(self, n):
+    self.saveNow(lambda: 0)
+    process_field(self, n, stripHTML)
+
+
+def transform_field_helper(editor):
+    n = editor.currentField
+    if isinstance(n, int):
+        transform_field(editor, n)
 
 
 def onFieldUndo(self):
@@ -84,9 +124,6 @@ def onFieldUndo(self):
     self.loadNote()
     self.web.setFocus()
     self.web.eval("focusField(%d);" % n)
-
-
-Editor.onFieldUndo = onFieldUndo
 
 
 def onSetNote(self, note, hide, focus):
@@ -121,46 +158,72 @@ def onHtmlPaste(self):
     )
 
 
-Editor.onHtmlPaste = onHtmlPaste
+template = [
+    ["Shortcut editor: clean current field", "&Clean current field", clean_field_helper],
+    ["Shortcut editor: clean all fields", "Clean &all fields", onHtmlCleanAll],
+    ["Shortcut editor: transform current field to plain text", "&Transform current field to plain text", transform_field_helper],
+    ["Shortcut editor: transform all fields to plain text", "Transform all fields to &plain text", tranform_all],
+    ["Shortcut editor: paste cleaned html", "paste cleaned html", onHtmlPaste],
+    ["Shortcut editor: current field UNDO", "current field UNDO", onFieldUndo],
+]
+
+
+basic_stylesheet = """
+QMenu::item {
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-right: 5px;
+    padding-left: 5px;
+    font-size: 15px;
+}
+QMenu::item:selected {
+    color: black;
+    background-color: #D9CD6D;
+}
+"""
+
+
+def clean_html_menu(editor):
+    m = QMenu(editor.mw)
+    if getUserOption("Shortcut editor: Menu wider fields"):
+        m.setStyleSheet(basic_stylesheet)
+    for userconfig, text, func in template:
+        cut = getUserOption(userconfig)
+        if cut:
+            text += f"({cut})"
+        a = m.addAction(text)
+        a.triggered.connect(lambda _, e=editor, f=func: f(e))
+    m.exec_(QCursor.pos())
 
 
 def setupButtons(righttopbtns, editor):
-    """Add buttons to editor"""
-    html_clean_hotkey = getUserOption("html_clean_hotkey")
-    html_paste_hotkey = getUserOption("html_paste_hotkey")
+    cut = getUserOption("Shortcut editor: Menu show")
+    tip = "Clean HTML"
+    if cut:
+        tip += "(%s)".format(cut)
     righttopbtns.append(
         editor.addButton(
             icon="",
             cmd="clean_html",
-            func=lambda e=editor: clean_field_helper(e),
+            func=lambda e=editor: clean_html_menu(e),
             label="cH",
-            tip="Clean HTML in this field({})".format(html_clean_hotkey),
-            keys=html_clean_hotkey,
+            tip=tip,
+            keys=cut,
         )
     )
-    t = QShortcut(QKeySequence("Shift+" + html_clean_hotkey), editor.parentWindow)
-    t.activated.connect(lambda: editor.onFieldUndo())
-    cut = getUserOption("html_batch_clean_hotkey")
-    if cut:
+    for cut, text, func in template:
+        cut = getUserOption(cut)
+        if not cut:
+            continue
         t = QShortcut(QKeySequence(cut), editor.parentWindow)
-        t.activated.connect(lambda: editor.onHtmlCleanAll())
-    t = QShortcut(QKeySequence(html_paste_hotkey), editor.parentWindow)
-    t.activated.connect(lambda: editor.onHtmlPaste())
-
-
+        t.activated.connect(lambda e=editor, f=func: f(e))
 gui_hooks.editor_did_init_buttons.append(setupButtons)
-
-
-mw.addonManager.setWebExports(__name__, r".*(css|js)")
-addon_package = mw.addonManager.addonFromModule(__name__)
 
 
 def on_webview_will_set_content(web_content: WebContent, context):
     if not isinstance(context, Editor):
         return
     web_content.js.append(f"/_addons/{addon_package}/js.js")
-
-
 gui_hooks.webview_will_set_content.append(on_webview_will_set_content)
 
 
@@ -168,8 +231,6 @@ def loadNote(self):
     if not self.note:
         return
     self.web.eval(f"setCleanFields()")
-
-
 gui_hooks.editor_did_load_note.append(loadNote)
 
 
@@ -183,6 +244,4 @@ def on_js_message(handled, cmd, editor):
         editor.clean_field(idx)
         return (True, None)
     return handled
-
-
 gui_hooks.webview_did_receive_js_message.append(on_js_message)

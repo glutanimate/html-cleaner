@@ -77,7 +77,7 @@ def cleanHtml(html):
     # both bleach and htmllaundry eat "<br />"...
     html = html.replace("<br />", "<br>")
 
-    if getUserOption("use_html_laundry") and LAUNDROMAT:
+    if getUserOption("Use_html_laundry") and LAUNDROMAT:
         # lxml.clean will munch <br> tags for some reason, even though
         # they're whitelisted. This is an ugly workaround, but it works.
         html = html.replace("<br>", "|||LBR|||").replace("</br>", "|||LBR|||")
