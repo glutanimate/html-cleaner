@@ -6,7 +6,7 @@ Cleans and minifies HTML content of the current field, removing extraneous tags 
 
 The add-on comes with a button and two hotkeys:
 
-- Clicking on the *cH* button in the editor will clean the HTML code of the active field. The same functionality can also be invoked via <kbd>Alt</kbd> + <kbd>H</kbd>
+- Clicking on the *cH* button in the editor will clean the HTML code of the active field. The same functionality can also be invoked via a custom shortcut that you can configure in the add-on config.
 - Shift-clicking the button or combining the aforementioned hotkey with Shift will undo the changes to the current field. (Anki's inbuilt undo functionality does not work with the add-on. This is a limitation that can't be solved trivially, I'm afraid.)
 - <kbd>Alt</kbd> + <kbd>V</kbd> will clean the clipboard selection and paste the processed text into the current field
 
@@ -20,7 +20,7 @@ The add-on's HTML processing is highly configurable. All options can be accessed
 
 HTML processing is provided by the Bleach library on all platforms. The add-on can also be configured to use the [`htmllaundry` library](https://github.com/wichert/htmllaundry) which can improve the cleaning results under under some circumstances.
 
-`htmllaundry` depends on `lxml` which Anki unfortunately does not ship with. In contrast to the other libraries included in this add-on, `lxml` cannot be easily be packaged for all platforms because it needs to be compiled. For that reason `htmllaundry` support is only available on Windows and Linux right now.
+`htmllaundry` depends on `lxml` which Anki unfortunately does not ship with. In contrast to the other libraries included in this add-on, `lxml` cannot be easily be packaged for all platforms because it needs to be compiled. For that reason `htmllaundry` support is only available on Windows and Linux right now (2020-05).
 
 *Issues with symlinks on Linux*
 
@@ -34,8 +34,6 @@ Because HTML cleaner comes with precompiled libraries on Linux, invoking the add
 - *Copyright © 2020 [Arthur Milchior](arthur@milchior.fr)*
 
 This add-on was developed on a commission by a fellow Anki user. All credit for the original idea goes to them.
-
-I'm always happy for new add-on commissions. If you'd like to hire my services to work an add-on or new feature, please feel free to reach out to me through *ankiglutanimate [αt] gmail . com*.
 
 Licensed under the [GNU AGPL v3](https://www.gnu.org/licenses/agpl.html).
 
