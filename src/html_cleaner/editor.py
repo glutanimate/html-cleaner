@@ -17,8 +17,6 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 
 import json
 
-from bs4 import BeautifulSoup
-
 from anki.utils import stripHTML
 
 from aqt import gui_hooks
@@ -90,10 +88,13 @@ def clean_field_helper(editor):
 # TODO: in some cases gets plain text with linesbreaks from clip.mimeData().text()
 # whereas Anki's stripHTML and the following remove_html_with_bs4 fail
 # not better than striphtml
+"""
+from bs4 import BeautifulSoup
 def remove_html_with_bs4(code):
     soup = BeautifulSoup(code, "html.parser")
     out =  soup.text
     return out
+"""
 
 
 def tranform_all(self):
@@ -241,7 +242,7 @@ def on_js_message(handled, cmd, editor):
         if editor.note is None:
             return (True, None)
         idx = int(cmd[len("clean:") :])
-        editor.clean_field(idx)
+        clean_field(editor, idx)
         return (True, None)
     return handled
 gui_hooks.webview_did_receive_js_message.append(on_js_message)
