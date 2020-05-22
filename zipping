@@ -1,2 +1,0 @@
-rm clean_html.ankiaddon
-zip -r clean_html.ankiaddon html_cleaner config.* *.ui *.sh *.py *.css manifest.* *.js web  LICENSE *.md zipping --exclude \*~ \*zip ankiweb

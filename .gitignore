@@ -12,3 +12,4 @@ tools/test2.py
 html-cleaner-*.zip
 *~
 /meta.json
+.gitignore
