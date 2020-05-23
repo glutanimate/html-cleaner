@@ -1,14 +1,33 @@
 # -*- coding: utf-8 -*-
 
 """
-Anki Add-on: HTML Cleaner
-
-Entry point for the add-on into Anki
-
-Please don't edit this if you don't know what you're doing.
-
 Copyright: (c) Glutanimate 2017
+           (c) ijgnd 2020
+
 License: GNU AGPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 """
 
-from .html_cleaner import editor, browser
+import aqt
+from aqt import mw
+from aqt.qt import (
+    QAction,
+)
+
+from . import editor
+from . import browser
+from .conf_dialog import MyConfigWindow
+
+
+aqt.dialogs.register_dialog("html_cleaner_config", MyConfigWindow, None)
+
+
+def onAdjustSettings():
+    d = MyConfigWindow(mw)
+    d.show()
+
+
+action = QAction(mw)
+action.setText("Html Cleaner: Adjust Clean settings")
+mw.form.menuTools.addAction(action)
+action.triggered.connect(onAdjustSettings)
+

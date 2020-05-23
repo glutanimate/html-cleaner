@@ -16,7 +16,7 @@ from aqt.qt import (
 )
 from aqt.utils import tooltip
 
-from .clean import cleanHtml
+from .clean import cleanHtml_regular_use
 from .config import getUserOption
 
 
@@ -76,7 +76,7 @@ class BatchCleanDialog(QDialog):
         if self.cb.isChecked():
             func = stripHTML
         else:
-            func = cleanHtml
+            func = cleanHtml_regular_use
         self.browser.mw.checkpoint("batch edit")
         self.browser.mw.progress.start()
         self.browser.model.beginReset()

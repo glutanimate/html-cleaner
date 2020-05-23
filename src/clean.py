@@ -4,7 +4,9 @@ import re
 
 # import modules from local path
 # (insert needed in order to skip system packages)
-sys.path.insert(0, os.path.dirname(__file__))
+folder = os.path.dirname(__file__)
+libfolder = os.path.join(folder, "libs")
+sys.path.insert(0, libfolder)
 import bleach
 
 from aqt.qt import *
@@ -21,13 +23,13 @@ brtags = (
 )
 
 
-def laundryHtml(html):
+def laundryHtml(html, tags, attributes):
     """Clean using htmllaundry/lxml"""
     # docs: http://lxml.de/api/lxml.html.clean.Cleaner-class.html
 
     cleaner = cleaners.LaundryCleaner(
-        allow_tags=getUserOption("keep_tags"),
-        safe_attrs=getUserOption("keep_attrs"),
+        allow_tags=tags,
+        safe_attrs=attributes,
         processing_instructions=True,
         meta=True,
         scripts=True,
@@ -46,15 +48,15 @@ def laundryHtml(html):
     return sanitize(html, cleaner)
 
 
-def bleachHtml(html):
+def bleachHtml(html, tags, attributes, styles):
     """Clean using bleach/html5lib"""
     # docs: https://bleach.readthedocs.io/en/latest/clean.html
 
     cleaned = bleach.clean(
         html,
-        tags=getUserOption("keep_tags"),
-        attributes=getUserOption("keep_attrs"),
-        styles=getUserOption("keep_styles"),
+        tags=tags,
+        attributes=attributes,
+        styles=styles,
         strip=True,
     )
 
@@ -71,19 +73,19 @@ else:
     LAUNDROMAT = True
 
 
-def cleanHtml(html):
+def cleanHtml(html, tags, attributes, styles, use_html_laundry):
     """Clean HTML with cleaners and custom regexes"""
     html = html.replace("\n", " ")
     # both bleach and htmllaundry eat "<br />"...
     html = html.replace("<br />", "<br>")
 
-    if getUserOption("Use_html_laundry") and LAUNDROMAT:
+    if use_html_laundry and LAUNDROMAT:
         # lxml.clean will munch <br> tags for some reason, even though
         # they're whitelisted. This is an ugly workaround, but it works.
         html = html.replace("<br>", "|||LBR|||").replace("</br>", "|||LBR|||")
-        html = laundryHtml(html)
+        html = laundryHtml(html, tags, attributes)
         html = html.replace("|||LBR|||", "<br>")
-    html = bleachHtml(html)
+    html = bleachHtml(html, tags, attributes, styles)
 
     # remove empty style attributes, try to pretty-format tags
     html = html.replace("<div><br></div>", "<br>")
@@ -91,3 +93,12 @@ def cleanHtml(html):
     html = re.sub(brtags, r"\1\n\3", html)
 
     return html
+
+
+def cleanHtml_regular_use(html):
+    group = getUserOption("clean_active_settings_group")
+    tags = getUserOption("clean_settings").get(group).get("keep_tags")
+    attributes = getUserOption("clean_settings").get(group).get("keep_attrs")
+    styles = getUserOption("clean_settings").get(group).get("keep_styles")
+    use_html_laundry = getUserOption("Use_html_laundry")
+    cleanHtml(html, tags, attributes, styles, use_html_laundry)

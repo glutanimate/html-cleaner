@@ -33,7 +33,7 @@ from aqt.qt import (
 )
 from aqt.utils import askUser
 
-from .clean import cleanHtml
+from .clean import cleanHtml_regular_use
 from .config import getUserOption
 
 
@@ -58,7 +58,7 @@ def onHtmlCleanAll(self):
     if not askUser(msg):
         return
     self.saveNow(lambda: 0)
-    process_all_fields(self, cleanHtml)
+    process_all_fields(self, cleanHtml_regular_use)
 
 
 def process_field(self, n, func):
@@ -76,7 +76,7 @@ def process_field(self, n, func):
 
 def clean_field(self, n):
     self.saveNow(lambda: 0)
-    process_field(self, n, cleanHtml)
+    process_field(self, n, cleanHtml_regular_use)
 
 
 def clean_field_helper(editor):
@@ -138,7 +138,7 @@ def onHtmlPaste(self):
     html = mime.html()
     if not html:
         return
-    cleaned = cleanHtml(html)
+    cleaned = cleanHtml_regular_use(html)
     self.web.eval(
         """
         var pasteHTML = function(html) {

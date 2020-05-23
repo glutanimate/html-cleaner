@@ -1,8 +1,12 @@
+import os
 import sys
 
 from aqt import mw
 from aqt.utils import showWarning
 
+
+addon_path = os.path.dirname(__file__)
+user_files = os.path.join(addon_path, "user_files")
 
 userOption = None
 foldername = mw.addonManager.addonFromModule(__name__)
@@ -89,3 +93,14 @@ def setUserOption(key, value):
     _getUserOption()
     userOption[key] = value
     writeConfig()
+
+
+def wcs(key, newvalue, addnew=False):
+    config = mw.addonManager.getConfig(__name__)
+    if not (key in config or addnew):
+        return False
+    else:
+        config[key] = newvalue
+        mw.addonManager.writeConfig(__name__, config)
+        update(None)
+        return True
