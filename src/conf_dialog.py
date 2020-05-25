@@ -75,8 +75,8 @@ class MyConfigWindow(QDialog):
         restoreGeom(self, "html_cleTRaner_conf_window")
         self.mw = mw
         
-        self.editor_old = ShortcutLessEditor(self.mw, self.form.widget_original, self)
-        self.clean_ed = DupeIgnoringEditor(self.mw, self.form.widget_cleaned, self)
+        self.editor_old = ShortcutLessEditor(self.mw, self.form.widget_original, self, True)
+        self.clean_ed = DupeIgnoringEditor(self.mw, self.form.widget_cleaned, self, True)
 
 
         # bottom
