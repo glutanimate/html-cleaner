@@ -196,10 +196,11 @@ class MyConfigWindow(QDialog):
             else: # clean
                 self.editor_old.setNote(None)
                 self.clean_ed.setNote(None)
+                self.current_note = None
             return
         nid = int(self.form.bot_cb_recent_notes.currentText())
         self.current_note = mw.col.getNote(nid)
-        # to make sure that no accidental edits are saved make a new temporary note
+        # to make sure that no accidental edits are saved make a new temporary note ?? side-effects?
         self.current_note.id = timestampID(mw.col.db, "notes")
         self.current_note.guid = guid64()
         self.editor_old.setNote(self.current_note, focusTo=0)
