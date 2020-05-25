@@ -12,3 +12,11 @@ function setCleanFields() {
         $td_name.append(div);
     }
 }
+
+function makeNonContentEditable() {
+    console.log('in makeNonContentEditable')
+    var allfields = document.getElementsByClassName("field clearfix");
+    for (var i = 0; i < allfields.length; i++) {
+        $(allfields.item(i)).prop('contenteditable', false);
+     }
+}

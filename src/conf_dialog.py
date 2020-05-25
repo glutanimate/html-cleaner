@@ -26,24 +26,10 @@ from aqt.utils import (
 
 from .clean import cleanHtml
 from .config import getUserOption, user_files, wcs
+from .custom_editors import DupeIgnoringEditor, ShortcutLessEditor
 from .editor import process_all_fields  # process_all_fields(self, func)
 from .forms import config_widgets_editors
 from .forms import settings_select_group
-
-
-class ShortcutLessEditor(Editor):
-    def setupShortcuts(self):
-        return
-    
-    def checkValid(self):
-        # no red background for duplicates
-        return
-
-
-class DupeIgnoringEditor(Editor):   
-    def checkValid(self):
-        # no red background for duplicates
-        return
 
 
 # from classes add-on
@@ -200,9 +186,6 @@ class MyConfigWindow(QDialog):
             return
         nid = int(self.form.bot_cb_recent_notes.currentText())
         self.current_note = mw.col.getNote(nid)
-        # to make sure that no accidental edits are saved make a new temporary note ?? side-effects?
-        self.current_note.id = timestampID(mw.col.db, "notes")
-        self.current_note.guid = guid64()
         self.editor_old.setNote(self.current_note, focusTo=0)
         self.clean_ed.setNote(self.current_note, focusTo=0)
 
