@@ -34,6 +34,16 @@ from .forms import settings_select_group
 class ShortcutLessEditor(Editor):
     def setupShortcuts(self):
         return
+    
+    def checkValid(self):
+        # no red background for duplicates
+        return
+
+
+class DupeIgnoringEditor(Editor):   
+    def checkValid(self):
+        # no red background for duplicates
+        return
 
 
 # from classes add-on
@@ -66,7 +76,7 @@ class MyConfigWindow(QDialog):
         self.mw = mw
         
         self.editor_old = ShortcutLessEditor(self.mw, self.form.widget_original, self)
-        self.clean_ed = Editor(self.mw, self.form.widget_cleaned, self)
+        self.clean_ed = DupeIgnoringEditor(self.mw, self.form.widget_cleaned, self)
 
 
         # bottom
@@ -192,7 +202,6 @@ class MyConfigWindow(QDialog):
         # to make sure that no accidental edits are saved make a new temporary note
         self.current_note.id = timestampID(mw.col.db, "notes")
         self.current_note.guid = guid64()
-        self.current_note.fields[0] = self.current_note.fields[0] + "&nbsp;"
         self.editor_old.setNote(self.current_note, focusTo=0)
         self.clean_ed.setNote(self.current_note, focusTo=0)
 
