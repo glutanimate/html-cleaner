@@ -7,6 +7,7 @@ from anki.utils import (
     timestampID,
 )
 
+import aqt
 from aqt import mw
 from aqt.editor import Editor
 from aqt.qt import (
@@ -51,6 +52,8 @@ class SelectDialog(QDialog):
 
 
 class MyConfigWindow(QDialog):
+    silentlyClose = True  # dialog manager
+
     def __init__(self, parent):
         QDialog.__init__(self, parent, Qt.Window)
         self.parent = parent
@@ -65,8 +68,8 @@ class MyConfigWindow(QDialog):
         self.editor_old = ShortcutLessEditor(self.mw, self.form.widget_original, self)
         self.clean_ed = Editor(self.mw, self.form.widget_cleaned, self)
 
-        # bottom
 
+        # bottom
         for f in getUserOption("nids_for_previewing_settings"):
             self.form.bot_cb_recent_notes.addItem(str(f))
         self.other_note_into_editor(firstrun=True)
@@ -96,7 +99,10 @@ class MyConfigWindow(QDialog):
         self.set_conf_text()  # initial run must before the next line or the editor_did_load_note hooks are run once more
                               # so that I get another entry of Arthurs "clean" next a field name
         self.form.conf_pte_conf.textChanged.connect(self.update_clean_ed)
+        self.show()
 
+    def reopen(self, parent):  # dialog manager
+        pass
 
     ##### sidebar
 
@@ -217,6 +223,7 @@ class MyConfigWindow(QDialog):
 
     def reject(self):
         saveGeom(self, "html_cleaner_conf_window")
+        aqt.dialogs.markClosed("html_cleaner_config")
         QDialog.reject(self)
 
     def accept(self):
@@ -229,4 +236,5 @@ class MyConfigWindow(QDialog):
         wcs("nids_for_previewing_settings", AllItems)
         
         saveGeom(self, "html_cleaner_conf_window")
+        aqt.dialogs.markClosed("html_cleaner_config")
         QDialog.accept(self)

@@ -22,8 +22,7 @@ aqt.dialogs.register_dialog("html_cleaner_config", MyConfigWindow, None)
 
 
 def onAdjustSettings():
-    d = MyConfigWindow(mw)
-    d.show()
+    aqt.dialogs.open("html_cleaner_config", mw)
 
 
 action = QAction(mw)
