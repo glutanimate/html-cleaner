@@ -35,7 +35,7 @@ from aqt.utils import askUser
 
 from .clean import cleanHtml_regular_use
 from .config import getUserOption
-from .custom_editors import DupeIgnoringEditor, ShortcutLessEditor
+from .custom_editors import DupeIgnoringEditor, ShortcutLessNonEditableEditor
 
 
 mw.addonManager.setWebExports(__name__, r".*(css|js)")
@@ -223,7 +223,7 @@ gui_hooks.editor_did_init_buttons.append(setupButtons)
 
 
 def on_webview_will_set_content(web_content: WebContent, context):
-    if not isinstance(context, (Editor, DupeIgnoringEditor, ShortcutLessEditor)):
+    if not isinstance(context, (Editor, DupeIgnoringEditor, ShortcutLessNonEditableEditor)):
         return
     web_content.js.append(f"/_addons/{addon_package}/js.js")
 gui_hooks.webview_will_set_content.append(on_webview_will_set_content)
