@@ -135,8 +135,8 @@ def onSetNote(self, note, hide, focus):
 
 def onHtmlPaste(self):
     """Executed on paste hotkey"""
-    mime = self.web.mungeClip(mode=QClipboard.Clipboard)
-    html = mime.html()
+    mime = self.mw.app.clipboard().mimeData(mode=QClipboard.Clipboard)
+    html, internal = self.web._processMime(mime)
     if not html:
         return
     cleaned = cleanHtml_regular_use(html)
