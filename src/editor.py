@@ -142,10 +142,10 @@ def onHtmlPaste(self):
     cleaned = cleanHtml_regular_use(html)
     self.web.eval(
         """
-        var pasteHTML = function(html) {
+        var customPasteHTML = function(html) {
             setFormat("inserthtml", html);
         };
-        var filterHTML = function(html) {
+        var customFilterHTML = function(html) {
             // wrap it in <top> as we aren't allowed to change top level elements
             var top = $.parseHTML("<ankitop>" + html + "</ankitop>")[0];
             filterNode(top);
@@ -154,7 +154,7 @@ def onHtmlPaste(self):
             outHtml = outHtml.replace(/&nbsp;/ig, " ");
             return outHtml;
         };
-        pasteHTML(%s);
+        customPasteHTML(%s);
         """
         % json.dumps(cleaned)
     )
