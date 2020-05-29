@@ -182,6 +182,7 @@
             ]
         }
     },
-    "nids_for_previewing_settings": [
+    "config window: show experimental config window": false,
+    "config window: loadable nids": [
     ]
 }

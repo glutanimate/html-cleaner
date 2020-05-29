@@ -15,6 +15,7 @@ from aqt.qt import (
 
 from . import editor
 from . import browser
+from .config import getUserOption
 from .conf_dialog import MyConfigWindow
 
 
@@ -25,8 +26,9 @@ def onAdjustSettings():
     aqt.dialogs.open("html_cleaner_config", mw)
 
 
-action = QAction(mw)
-action.setText("Html Cleaner: Adjust Clean settings")
-mw.form.menuTools.addAction(action)
-action.triggered.connect(onAdjustSettings)
+if getUserOption("config window: show experimental config window"):
+    action = QAction(mw)
+    action.setText("Html Cleaner: Adjust Clean settings")
+    mw.form.menuTools.addAction(action)
+    action.triggered.connect(onAdjustSettings)
 
