@@ -48,7 +48,8 @@ def process_all_fields(self, func):
         if not self.note.fields[n]:
             continue
         self.note.fields[n] = func(self.note.fields[n])
-    self.note.flush()
+    if not self.addMode:   
+        self.note.flush()
     self.loadNote()
     self.web.setFocus()
     self.web.eval("focusField(%d);" % n)
