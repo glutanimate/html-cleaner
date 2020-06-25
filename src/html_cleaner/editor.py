@@ -20,7 +20,7 @@ import json
 from anki.utils import stripHTML
 from aqt import gui_hooks, mw
 from aqt.editor import Editor
-from aqt.qt import QClipboard, QCursor, QKeySequence, QMenu, QShortcut, Qt
+from aqt.qt import QClipboard, QCursor, QKeySequence, QMenu, QShortcut
 from aqt.utils import askUser
 from aqt.webview import WebContent
 

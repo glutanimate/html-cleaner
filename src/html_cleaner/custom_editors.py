@@ -1,4 +1,3 @@
-from aqt import AnkiQt
 from aqt.editor import Editor
 
 

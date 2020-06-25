@@ -3,9 +3,6 @@ import re
 import sys
 
 import bleach
-from anki.hooks import wrap
-from anki.utils import json
-from aqt.qt import *
 
 from .config import getUserOption
 
@@ -14,7 +11,6 @@ from .config import getUserOption
 folder = os.path.dirname(__file__)
 libfolder = os.path.join(folder, "_vendor")
 sys.path.insert(0, libfolder)
-
 
 
 
