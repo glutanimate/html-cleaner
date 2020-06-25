@@ -43,7 +43,7 @@ from .config import getUserOption
 # import modules from local path
 # (insert needed in order to skip system packages)
 folder = os.path.dirname(__file__)
-libfolder = os.path.join(folder, "_vendor")
+libfolder = os.path.join(folder, "_vendor_legacy")
 sys.path.insert(0, libfolder)
 
 
