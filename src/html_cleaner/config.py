@@ -4,7 +4,6 @@ import sys
 from aqt import mw
 from aqt.utils import showWarning
 
-
 addon_path = os.path.dirname(__file__)
 user_files = os.path.join(addon_path, "user_files")
 

@@ -1,19 +1,12 @@
 import json
 import os
 
-from anki.lang import _
-from anki.utils import (
-    guid64,
-    timestampID,
-)
-
 import aqt
+from anki.lang import _
+from anki.utils import guid64, timestampID
 from aqt import mw
 from aqt.editor import Editor
-from aqt.qt import (
-    QDialog,
-    Qt,
-)
+from aqt.qt import QDialog, Qt
 from aqt.utils import (
     askUser,
     getOnlyText,
@@ -28,8 +21,7 @@ from .clean import cleanHtml
 from .config import getUserOption, user_files, wcs
 from .custom_editors import DupeIgnoringEditor, ShortcutLessNonEditableEditor
 from .editor import process_all_fields  # process_all_fields(self, func)
-from .forms import config_widgets_editors
-from .forms import settings_select_group
+from .forms import config_widgets_editors, settings_select_group
 
 
 # from classes add-on

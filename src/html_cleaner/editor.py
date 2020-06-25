@@ -18,25 +18,15 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 import json
 
 from anki.utils import stripHTML
-
-from aqt import gui_hooks
-from aqt import mw
+from aqt import gui_hooks, mw
 from aqt.editor import Editor
-from aqt.webview import WebContent
-from aqt.qt import (
-    QClipboard,
-    QCursor,
-    QKeySequence,
-    QMenu,
-    QShortcut,
-    Qt,
-)
+from aqt.qt import QClipboard, QCursor, QKeySequence, QMenu, QShortcut, Qt
 from aqt.utils import askUser
+from aqt.webview import WebContent
 
 from .clean import cleanHtml_regular_use
 from .config import getUserOption
 from .custom_editors import DupeIgnoringEditor, ShortcutLessNonEditableEditor
-
 
 mw.addonManager.setWebExports(__name__, r".*(css|js)")
 addon_package = mw.addonManager.addonFromModule(__name__)

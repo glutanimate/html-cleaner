@@ -11,11 +11,9 @@ import aqt
 from aqt import mw
 from aqt.qt import QAction
 
-from . import editor
-from . import browser
-from .config import getUserOption
+from . import browser, editor
 from .conf_dialog import MyConfigWindow
-
+from .config import getUserOption
 
 aqt.dialogs.register_dialog("html_cleaner_config", MyConfigWindow, None)
 
