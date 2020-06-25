@@ -55,7 +55,7 @@ from .clean import cleanHtml
 from .config import getUserOption, user_files, wcs
 from .custom_editors import DupeIgnoringEditor, ShortcutLessNonEditableEditor
 from .editor import process_all_fields  # process_all_fields(self, func)
-from .forms import config_widgets_editors, settings_select_group
+from .gui.forms.anki21 import config_widgets_editors, settings_select_group
 
 
 # from classes add-on
