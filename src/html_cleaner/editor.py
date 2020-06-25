@@ -248,7 +248,7 @@ def on_webview_will_set_content(web_content: WebContent, context):
         context, (Editor, DupeIgnoringEditor, ShortcutLessNonEditableEditor)
     ):
         return
-    web_content.js.append(f"/_addons/{addon_package}/js.js")
+    web_content.js.append(f"/_addons/{addon_package}/web/editor.js")
 
 
 gui_hooks.webview_will_set_content.append(on_webview_will_set_content)
