@@ -169,23 +169,23 @@ def onHtmlPaste(self):
 
 template = [
     [
-        "Shortcut editor: clean current field",
+        "shortcut_editor_clean_current_field",
         "&Clean current field",
         clean_field_helper,
     ],
-    ["Shortcut editor: clean all fields", "Clean &all fields", onHtmlCleanAll],
+    ["shortcut_editor_clean_all_fields", "Clean &all fields", onHtmlCleanAll],
     [
-        "Shortcut editor: transform current field to plain text",
+        "shortcut_editor_transform_current_field_plain_text",
         "&Transform current field to plain text",
         transform_field_helper,
     ],
     [
-        "Shortcut editor: transform all fields to plain text",
+        "shortcut_editor_transform_all_fields_plain_text",
         "Transform all fields to &plain text",
         tranform_all,
     ],
-    ["Shortcut editor: paste cleaned html", "paste cleaned html", onHtmlPaste],
-    ["Shortcut editor: current field UNDO", "current field UNDO", onFieldUndo],
+    ["shortcut_editor_paste_cleaned_html", "paste cleaned html", onHtmlPaste],
+    ["shortcut_editor_current_field_undo", "current field UNDO", onFieldUndo],
 ]
 
 
@@ -206,7 +206,7 @@ QMenu::item:selected {
 
 def clean_html_menu(editor):
     m = QMenu(editor.mw)
-    if getUserOption("Shortcut editor: Menu wider fields"):
+    if getUserOption("shortcut_editor_menu_wider_fields"):
         m.setStyleSheet(basic_stylesheet)
     for userconfig, text, func in template:
         cut = getUserOption(userconfig)
@@ -218,7 +218,7 @@ def clean_html_menu(editor):
 
 
 def setupButtons(righttopbtns, editor):
-    cut = getUserOption("Shortcut editor: Menu show")
+    cut = getUserOption("shortcut_editor_menu_show")
     tip = "Clean HTML"
     if cut:
         tip += "(%s)".format(cut)

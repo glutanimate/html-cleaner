@@ -50,7 +50,7 @@ def onAdjustSettings():
     aqt.dialogs.open("html_cleaner_config", mw)
 
 
-if getUserOption("config window: show experimental config window"):
+if getUserOption("config_window_show_experimental_config_window"):
     action = QAction(mw)
     action.setText("Html Cleaner: Adjust Clean settings")
     mw.form.menuTools.addAction(action)

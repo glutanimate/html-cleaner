@@ -1,14 +1,14 @@
 {
-    "Shortcut browser: batch clean": "Ctrl+Alt+M",
-    "Shortcut editor: Menu show": "Alt+M",
-    "Shortcut editor: Menu wider fields": true,
-    "Shortcut editor: clean current field": "",
-    "Shortcut editor: clean all fields": "Ctrl+Alt+M",
-    "Shortcut editor: current field UNDO": "",
-    "Shortcut editor: transform current field to plain text": "Ctrl+Meta+M",
-    "Shortcut editor: transform all fields to plain text": "",
-    "Shortcut editor: paste cleaned html": "Alt+V",
-    "Use_html_laundry": false,
+    "shortcut_browser_batch_clean": "Ctrl+Alt+M",
+    "shortcut_editor_menu_show": "Alt+M",
+    "shortcut_editor_menu_wider_fields": true,
+    "shortcut_editor_clean_current_field": "",
+    "shortcut_editor_clean_all_fields": "Ctrl+Alt+M",
+    "shortcut_editor_current_field_undo": "",
+    "shortcut_editor_transform_current_field_plain_text": "Ctrl+Meta+M",
+    "shortcut_editor_transform_all_fields_plain_text": "",
+    "shortcut_editor_paste_cleaned_html": "Alt+V",
+    "use_html_laundry": false,
     "clean_active_settings_group": "keep_most",
     "clean_settings": {
         "keep_most": {
@@ -182,7 +182,7 @@
             ]
         }
     },
-    "config window: show experimental config window": false,
-    "config window: loadable nids": [
+    "config_window_show_experimental_config_window": false,
+    "config_window_loadable_nids": [
     ]
 }

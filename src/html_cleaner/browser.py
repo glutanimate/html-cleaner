@@ -146,7 +146,7 @@ def add_menu(browser):
     menu = browser.form.menuEdit
     menu.addSeparator()
     a = menu.addAction("Batch clean HTML...")
-    cut = getUserOption("Shortcut browser: batch clean")
+    cut = getUserOption("shortcut_browser_batch_clean")
     if cut:
         a.setShortcut(QKeySequence(cut))
     a.triggered.connect(lambda _, b=browser: onBatchClean(b))

@@ -95,7 +95,7 @@ class MyConfigWindow(QDialog):
         )
 
         # bottom
-        for f in getUserOption("config window: loadable nids"):
+        for f in getUserOption("config_window_loadable_nids"):
             self.form.bot_cb_recent_notes.addItem(str(f))
         self.other_note_into_editor(firstrun=True)
         # initial run must before the next line or the editor_did_load_note hooks are run once more
@@ -277,7 +277,7 @@ class MyConfigWindow(QDialog):
 
         cbr = self.form.bot_cb_recent_notes
         AllItems = [int(cbr.itemText(i)) for i in range(cbr.count())]
-        wcs("config window: loadable nids", AllItems)
+        wcs("config_window_loadable_nids", AllItems)
 
         saveGeom(self, "html_cleaner_conf_window")
         aqt.dialogs.markClosed("html_cleaner_config")

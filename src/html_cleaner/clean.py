@@ -128,5 +128,5 @@ def cleanHtml_regular_use(html):
     tags = getUserOption("clean_settings").get(group).get("keep_tags")
     attributes = getUserOption("clean_settings").get(group).get("keep_attrs")
     styles = getUserOption("clean_settings").get(group).get("keep_styles")
-    use_html_laundry = getUserOption("Use_html_laundry")
+    use_html_laundry = getUserOption("use_html_laundry")
     return cleanHtml(html, tags, attributes, styles, use_html_laundry)
