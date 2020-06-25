@@ -84,7 +84,7 @@ class MyConfigWindow(QDialog):
         self.form.setupUi(self)
         self.setWindowTitle("Anki Add-on: Html Cleaner clean settings")
         self.resize(800, 1300)
-        restoreGeom(self, "html_cleTRaner_conf_window")
+        restoreGeom(self, "html_cleaner_conf_window")
         self.mw = mw
 
         self.editor_old = ShortcutLessNonEditableEditor(
