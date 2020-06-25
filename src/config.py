@@ -1,15 +1,24 @@
+import os
 import sys
 
 from aqt import mw
 from aqt.utils import showWarning
 
 
+addon_path = os.path.dirname(__file__)
+user_files = os.path.join(addon_path, "user_files")
+
 userOption = None
-addon = mw.addonManager.addonFromModule(__name__)
-default = mw.addonManager.addonConfigDefaults(__name__)
+foldername = mw.addonManager.addonFromModule(__name__)
+default = mw.addonManager.addonConfigDefaults(foldername)
+
 
 def _getUserOption():
     global userOption
+    # workaround: for occasional error "'NoneType' object is not subscriptable" in  current[key] = current_default[key] 
+    global default
+    if default is None:
+        default = mw.addonManager.addonConfigDefaults(foldername)
     if userOption is None:
         userOption = mw.addonManager.getConfig(__name__)
 
@@ -84,3 +93,14 @@ def setUserOption(key, value):
     _getUserOption()
     userOption[key] = value
     writeConfig()
+
+
+def wcs(key, newvalue, addnew=False):
+    config = mw.addonManager.getConfig(__name__)
+    if not (key in config or addnew):
+        return False
+    else:
+        config[key] = newvalue
+        mw.addonManager.writeConfig(__name__, config)
+        update(None)
+        return True

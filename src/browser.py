@@ -1,9 +1,24 @@
+from anki.utils import stripHTML
+
 from aqt import gui_hooks
 from aqt.browser import Browser
+from aqt.qt import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QHBoxLayout,
+    QKeySequence,
+    QLabel,
+    Qt,
+    QVBoxLayout,
+    QShortcut,
+)
 from aqt.utils import tooltip
-from aqt.qt import QLabel, QDialog, QHBoxLayout, QDialogButtonBox, QComboBox, QVBoxLayout, QKeySequence, QShortcut, Qt
-from .clean import cleanHtml
+
+from .clean import cleanHtml_regular_use
 from .config import getUserOption
+
 
 class BatchCleanDialog(QDialog):
     """Browser batch editing dialog"""
@@ -19,13 +34,19 @@ class BatchCleanDialog(QDialog):
         self.fsel = QComboBox()
         fields = self._getFields()
         self.fsel.addItems(fields)
+        self.cb = QCheckBox()
+        self.cb.setText("transform to plain text")
         f_hbox = QHBoxLayout()
         f_hbox.addWidget(flabel)
         f_hbox.addWidget(self.fsel)
+        f_hbox.addWidget(self.cb)
         f_hbox.setAlignment(Qt.AlignLeft)
 
-        button_box = QDialogButtonBox(QDialogButtonBox.Ok|QDialogButtonBox.Cancel, orientation=Qt.Horizontal, parent=self)
-
+        button_box = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
+            orientation=Qt.Horizontal,
+            parent=self,
+        )
 
         bottom_hbox = QHBoxLayout()
         bottom_hbox.addWidget(button_box)
@@ -52,6 +73,10 @@ class BatchCleanDialog(QDialog):
         self.close()
 
     def accept(self):
+        if self.cb.isChecked():
+            func = stripHTML
+        else:
+            func = cleanHtml_regular_use
         self.browser.mw.checkpoint("batch edit")
         self.browser.mw.progress.start()
         self.browser.model.beginReset()
@@ -59,7 +84,7 @@ class BatchCleanDialog(QDialog):
         cnt = 0
         for nid in self.nids:
             note = self.browser.mw.col.getNote(nid)
-            cleaned = cleanHtml(note[fld_name])
+            cleaned = func(note[fld_name])
             if cleaned != note[fld_name]:
                 cnt += 1
                 note[fld_name] = cleaned
@@ -83,12 +108,13 @@ def onBatchClean(browser):
     dialog = BatchCleanDialog(browser, nids)
     dialog.exec_()
 
+
 def add_menu(browser):
     menu = browser.form.menuEdit
     menu.addSeparator()
-    a = menu.addAction('Batch clean HTML...')
-    a.setShortcut(QKeySequence(getUserOption("html_batch_clean_hotkey")))
+    a = menu.addAction("Batch clean HTML...")
+    cut = getUserOption("Shortcut browser: batch clean")
+    if cut:
+        a.setShortcut(QKeySequence(cut))
     a.triggered.connect(lambda _, b=browser: onBatchClean(b))
-
-
 gui_hooks.browser_menus_did_init.append(add_menu)
