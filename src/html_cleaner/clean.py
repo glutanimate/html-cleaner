@@ -53,11 +53,7 @@ def bleachHtml(html, tags, attributes, styles):
     # docs: https://bleach.readthedocs.io/en/latest/clean.html
 
     cleaned = bleach.clean(
-        html,
-        tags=tags,
-        attributes=attributes,
-        styles=styles,
-        strip=True,
+        html, tags=tags, attributes=attributes, styles=styles, strip=True,
     )
 
     return cleaned

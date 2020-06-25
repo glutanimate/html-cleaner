@@ -48,7 +48,7 @@ def process_all_fields(self, func):
         if not self.note.fields[n]:
             continue
         self.note.fields[n] = func(self.note.fields[n])
-    if not self.addMode:   
+    if not self.addMode:
         self.note.flush()
     self.loadNote()
     self.web.setFocus()
@@ -162,10 +162,22 @@ def onHtmlPaste(self):
 
 
 template = [
-    ["Shortcut editor: clean current field", "&Clean current field", clean_field_helper],
+    [
+        "Shortcut editor: clean current field",
+        "&Clean current field",
+        clean_field_helper,
+    ],
     ["Shortcut editor: clean all fields", "Clean &all fields", onHtmlCleanAll],
-    ["Shortcut editor: transform current field to plain text", "&Transform current field to plain text", transform_field_helper],
-    ["Shortcut editor: transform all fields to plain text", "Transform all fields to &plain text", tranform_all],
+    [
+        "Shortcut editor: transform current field to plain text",
+        "&Transform current field to plain text",
+        transform_field_helper,
+    ],
+    [
+        "Shortcut editor: transform all fields to plain text",
+        "Transform all fields to &plain text",
+        tranform_all,
+    ],
     ["Shortcut editor: paste cleaned html", "paste cleaned html", onHtmlPaste],
     ["Shortcut editor: current field UNDO", "current field UNDO", onFieldUndo],
 ]
@@ -220,13 +232,19 @@ def setupButtons(righttopbtns, editor):
             continue
         t = QShortcut(QKeySequence(cut), editor.parentWindow)
         t.activated.connect(lambda e=editor, f=func: f(e))
+
+
 gui_hooks.editor_did_init_buttons.append(setupButtons)
 
 
 def on_webview_will_set_content(web_content: WebContent, context):
-    if not isinstance(context, (Editor, DupeIgnoringEditor, ShortcutLessNonEditableEditor)):
+    if not isinstance(
+        context, (Editor, DupeIgnoringEditor, ShortcutLessNonEditableEditor)
+    ):
         return
     web_content.js.append(f"/_addons/{addon_package}/js.js")
+
+
 gui_hooks.webview_will_set_content.append(on_webview_will_set_content)
 
 
@@ -234,6 +252,8 @@ def loadNote(self):
     if not self.note:
         return
     self.web.eval(f"setCleanFields()")
+
+
 gui_hooks.editor_did_load_note.append(loadNote)
 
 
@@ -247,4 +267,6 @@ def on_js_message(handled, cmd, editor):
         clean_field(editor, idx)
         return (True, None)
     return handled
+
+
 gui_hooks.webview_did_receive_js_message.append(on_js_message)

@@ -9,9 +9,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 
 import aqt
 from aqt import mw
-from aqt.qt import (
-    QAction,
-)
+from aqt.qt import QAction
 
 from . import editor
 from . import browser
@@ -31,4 +29,3 @@ if getUserOption("config window: show experimental config window"):
     action.setText("Html Cleaner: Adjust Clean settings")
     mw.form.menuTools.addAction(action)
     action.triggered.connect(onAdjustSettings)
-

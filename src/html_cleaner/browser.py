@@ -117,4 +117,6 @@ def add_menu(browser):
     if cut:
         a.setShortcut(QKeySequence(cut))
     a.triggered.connect(lambda _, b=browser: onBatchClean(b))
+
+
 gui_hooks.browser_menus_did_init.append(add_menu)

@@ -60,10 +60,13 @@ class MyConfigWindow(QDialog):
         self.resize(800, 1300)
         restoreGeom(self, "html_cleTRaner_conf_window")
         self.mw = mw
-        
-        self.editor_old = ShortcutLessNonEditableEditor(self.mw, self.form.widget_original, self, True)
-        self.clean_ed = DupeIgnoringEditor(self.mw, self.form.widget_cleaned, self, True)
 
+        self.editor_old = ShortcutLessNonEditableEditor(
+            self.mw, self.form.widget_original, self, True
+        )
+        self.clean_ed = DupeIgnoringEditor(
+            self.mw, self.form.widget_cleaned, self, True
+        )
 
         # bottom
         for f in getUserOption("config window: loadable nids"):
@@ -71,7 +74,9 @@ class MyConfigWindow(QDialog):
         self.other_note_into_editor(firstrun=True)
         # initial run must before the next line or the editor_did_load_note hooks are run once more
         # so that I get another entry of Arthurs "clean" next a field name
-        self.form.bot_cb_recent_notes.currentIndexChanged.connect(self.other_note_into_editor)    
+        self.form.bot_cb_recent_notes.currentIndexChanged.connect(
+            self.other_note_into_editor
+        )
         self.form.bot_pb_add_note.clicked.connect(self.add_note)
         self.form.bot_pb_remove.clicked.connect(self.remove_note)
         self.form.bot_pb_ok.clicked.connect(self.accept)
@@ -82,8 +87,12 @@ class MyConfigWindow(QDialog):
         self.active_settings_group = getUserOption("clean_active_settings_group")
         self.current_config = self.clean_settings[self.active_settings_group]
         if self.active_settings_group not in self.clean_settings:
-            showInfo(("Invalid config detected: the group set in 'clean_active_settings_group' "
-                      'must be in "clean_settings". Update/Repair your config. Aborting'))
+            showInfo(
+                (
+                    "Invalid config detected: the group set in 'clean_active_settings_group' "
+                    'must be in "clean_settings". Update/Repair your config. Aborting'
+                )
+            )
             self.reject()
         self.form.conf_pb_group.setText(self.active_settings_group)
         self.form.conf_pb_group.clicked.connect(self.on_config_group_change)
@@ -93,7 +102,7 @@ class MyConfigWindow(QDialog):
         self.form.conf_pb_save.clicked.connect(self.save_current_vals)
 
         self.set_conf_text()  # initial run must before the next line or the editor_did_load_note hooks are run once more
-                              # so that I get another entry of Arthurs "clean" next a field name
+        # so that I get another entry of Arthurs "clean" next a field name
         self.form.conf_pte_conf.textChanged.connect(self.update_clean_ed)
         self.show()
 
@@ -103,18 +112,28 @@ class MyConfigWindow(QDialog):
     ##### sidebar
 
     def on_config_group_change(self):
-        if not askUser(("Changing the active config group will discard all changes for the "
-                        "currently active group. Proceed?")):
+        if not askUser(
+            (
+                "Changing the active config group will discard all changes for the "
+                "currently active group. Proceed?"
+            )
+        ):
             return
         e = SelectDialog(self, list(self.clean_settings.keys()))
         if e.exec():
             self.active_settings_group = e.sel
-            self.current_config = self.clean_settings[self.active_settings_group]       
+            self.current_config = self.clean_settings[self.active_settings_group]
             self.set_conf_text()
             self.other_note_into_editor()
 
     def set_conf_text(self):
-        fmted = json.dumps(self.current_config, ensure_ascii=False, sort_keys=True, indent=4, separators=(",", ": "))
+        fmted = json.dumps(
+            self.current_config,
+            ensure_ascii=False,
+            sort_keys=True,
+            indent=4,
+            separators=(",", ": "),
+        )
         self.form.conf_pte_conf.setPlainText(fmted)
 
     def conf_text_to_dict(self):
@@ -132,7 +151,7 @@ class MyConfigWindow(QDialog):
 
     def populate_versions(self):
         self.form.conf_cb_old.setVisible(False)  # setParent(None)
-        self.form.conf_ql_versions.setVisible(False) # setParent(None)
+        self.form.conf_ql_versions.setVisible(False)  # setParent(None)
         return
         # TODO
         self.form.conf_cb_old.clear()
@@ -149,8 +168,8 @@ class MyConfigWindow(QDialog):
         self.clean_settings[self.active_settings_group] = self.current_config
         wcs("clean_settings", self.clean_settings)
 
-    ##### bottom  
-        
+    ##### bottom
+
     def add_note(self):
         newnid = getOnlyText("Enter Note Id (nid) of note to display here")
         if not newnid:
@@ -166,20 +185,20 @@ class MyConfigWindow(QDialog):
                 return
         cbr = self.form.bot_cb_recent_notes
         cbr.addItem(str(newnid))
-        cbr.setCurrentIndex(cbr.count()-1)
+        cbr.setCurrentIndex(cbr.count() - 1)
 
     def remove_note(self):
         cbr = self.form.bot_cb_recent_notes
         idx = cbr.currentIndex()
         cbr.removeItem(idx)
         if not cbr.count():  # not needed because index changes when there are notes
-            self.other_note_into_editor()  
+            self.other_note_into_editor()
 
     def other_note_into_editor(self, firstrun=False):
         if not self.form.bot_cb_recent_notes.count():
             if firstrun:
                 pass  # it will be set because of the text change
-            else: # clean
+            else:  # clean
                 self.editor_old.setNote(None)
                 self.clean_ed.setNote(None)
                 self.current_note = None
@@ -191,7 +210,7 @@ class MyConfigWindow(QDialog):
 
     def update_clean_ed(self):
         if not self.current_note:
-            print('returning form udpate_clean_ed')
+            print("returning form udpate_clean_ed")
             return
         self.conf_text_to_dict()
         missing = []
@@ -205,13 +224,19 @@ class MyConfigWindow(QDialog):
         if styles is None:
             missing.append("keep_styles")
         if missing:
-            showInfo(( "Something in the config from the sidebar is wrong: The following keys are"
-                      f'missing: {", ".join(missing)}.'))
+            showInfo(
+                (
+                    "Something in the config from the sidebar is wrong: The following keys are"
+                    f'missing: {", ".join(missing)}.'
+                )
+            )
             return
         use_html_laundry = False
         # TODO maybe get contents from old editor?
         for n in range(len(self.current_note.fields)):
-            self.clean_ed.note.fields[n] = cleanHtml(self.current_note.fields[n], tags, attributes, styles, use_html_laundry)
+            self.clean_ed.note.fields[n] = cleanHtml(
+                self.current_note.fields[n], tags, attributes, styles, use_html_laundry
+            )
         self.clean_ed.loadNote()
 
     def reject(self):
@@ -223,11 +248,11 @@ class MyConfigWindow(QDialog):
         self.conf_text_to_dict()  #  updates self.current_config
         self.clean_settings[self.active_settings_group] = self.current_config
         wcs("clean_settings", self.clean_settings)
-        
+
         cbr = self.form.bot_cb_recent_notes
         AllItems = [int(cbr.itemText(i)) for i in range(cbr.count())]
         wcs("config window: loadable nids", AllItems)
-        
+
         saveGeom(self, "html_cleaner_conf_window")
         aqt.dialogs.markClosed("html_cleaner_config")
         QDialog.accept(self)

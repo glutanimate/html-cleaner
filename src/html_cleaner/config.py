@@ -15,7 +15,7 @@ default = mw.addonManager.addonConfigDefaults(foldername)
 
 def _getUserOption():
     global userOption
-    # workaround: for occasional error "'NoneType' object is not subscriptable" in  current[key] = current_default[key] 
+    # workaround: for occasional error "'NoneType' object is not subscriptable" in  current[key] = current_default[key]
     global default
     if default is None:
         default = mw.addonManager.addonConfigDefaults(foldername)
@@ -63,10 +63,9 @@ def getUserOption(keys=None):
         writeConfig()
     return current
 
+
 def writeConfig():
     mw.addonManager.writeConfig(__name__, userOption)
-
-
 
 
 def update(_):

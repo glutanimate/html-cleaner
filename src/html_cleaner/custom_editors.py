@@ -9,13 +9,13 @@ class ShortcutLessNonEditableEditor(Editor):
 
     def setupShortcuts(self):
         return
-    
+
     def checkValid(self):
         # no red background for duplicates
         return
 
 
-class DupeIgnoringEditor(Editor):   
+class DupeIgnoringEditor(Editor):
     def checkValid(self):
         # no red background for duplicates
         return
