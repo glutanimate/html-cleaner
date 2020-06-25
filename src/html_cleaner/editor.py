@@ -28,7 +28,7 @@ from .clean import cleanHtml_regular_use
 from .config import getUserOption
 from .custom_editors import DupeIgnoringEditor, ShortcutLessNonEditableEditor
 
-mw.addonManager.setWebExports(__name__, r".*(css|js)")
+mw.addonManager.setWebExports(__name__, r"web/.*")
 addon_package = mw.addonManager.addonFromModule(__name__)
 
 
