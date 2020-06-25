@@ -1,6 +1,6 @@
 <!-- BANNER -->
 
-HTML Cleaner is an add-on for Anki.
+Cleans and minifies the HTML content of the current field, removing extraneous tags and attributes copied over from apps like Word, Chrome, etc.
 
 ![](https://raw.githubusercontent.com/glutanimate/html-cleaner/master/screenshots/screenshot.png)
 
