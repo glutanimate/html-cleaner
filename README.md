@@ -109,9 +109,9 @@ Contributions are welcome! Please review the [contribution guidelines](./CONTRIB
 
 This add-on was developed on a commission by a fellow Anki user. All credit for the original idea goes to them.
 
-My heartfelt thanks goes out to Arthur and ijgnd for their major contributions in bringing this add-on to Anki 2.1 and extending it with a plethora of new features.
+My heartfelt thanks goes out to Arthur and ijgnd for their major contributions in bringing this add-on to Anki 2.1 and extending it with a plethora of new features. For a list of all significant contributors to this project and their contributions please also see [CONTRIBUTORS](./CONTRIBUTORS).
 
-This add-on also would not not have been possible without the following open-source libraries:
+This add-on would not not have been possible without the following open-source libraries:
 
 - [Bleach](https://github.com/mozilla/bleach) 2.0.0. Copyright (c) 2014-2017 Mozilla Foundation. Licensed under the Apache License 2.0
 - [html5lib](https://github.com/html5lib/) 0.999999999. Copyright (c) 2006-2013 James Graham and other contributors. Licensed under the MIT license.

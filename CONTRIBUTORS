@@ -1,0 +1,12 @@
+# The following is a list of people who have contributed ideas, code,
+# translations, or in general have helped this project along its way
+# in a significant fashion.
+#
+# This does not necessarily list everyone who has contributed code.
+# To see the full list of contributors, please see the revision history
+# of this project in the version-control system.
+
+* Arthur Milchior <arthur@milchior.fr> (porting the add-on to 2.1, and
+  adding a number of batch-processing features)
+* Ijgnd <https://github.com/ijgnd> (adding a new format stripping approach,
+  providing additional UI controls, and creating a GUI config dialog)
