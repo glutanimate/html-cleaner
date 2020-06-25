@@ -9,3 +9,4 @@ addon.json export-ignore
 ## Vendored
 src/*/libaddon linguist-vendored
 src/*/_vendor linguist-vendored
+src/*/_vendor_legacy linguist-vendored
