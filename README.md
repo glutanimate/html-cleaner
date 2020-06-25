@@ -1,4 +1,4 @@
-<p align="center"><img src="screenshots/logo.png"></p>
+<p align="center"><img src="screenshots/screenshot.png"></p>
 
 <h2 align="center">HTML Cleaner for Anki</h2>
 
