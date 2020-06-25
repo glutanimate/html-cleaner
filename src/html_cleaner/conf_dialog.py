@@ -37,16 +37,13 @@ import os
 
 import aqt
 from anki.lang import _
-from anki.utils import guid64, timestampID
 from aqt import mw
-from aqt.editor import Editor
 from aqt.qt import QDialog, Qt
 from aqt.utils import (
     askUser,
     getOnlyText,
     restoreGeom,
     saveGeom,
-    shortcut,
     showInfo,
     tooltip,
 )
