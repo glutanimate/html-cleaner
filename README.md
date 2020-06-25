@@ -1,43 +1,117 @@
-## HTML Cleaner Add-on for Anki
+<p align="center"><img src="screenshots/logo.png"></p>
 
-Cleans and minifies HTML content of the current field, removing extraneous tags and attributes copied over from apps like Word, Chrome, etc.
+<h2 align="center">HTML Cleaner for Anki</h2>
 
-## Usage
+<p align="center">
+<a title="Latest (pre-)release" href="https://github.com/glutanimate/html-cleaner/releases"><img src ="https://img.shields.io/github/release-pre/glutanimate/html-cleaner.svg?colorB=brightgreen"></a>
+<a title="License: GNU AGPLv3" href="https://github.com/glutanimate/html-cleaner/blob/master/LICENSE"><img  src="https://img.shields.io/badge/license-GNU AGPLv3-green.svg"></a>
+<!--<a title="Rate on AnkiWeb" href="https://ankiweb.net/shared/info/ANKIWEB_ID"><img src="https://glutanimate.com/logos/ankiweb-rate.svg"></a>-->
+<br>
+<a title="Buy me a coffee :)" href="https://ko-fi.com/X8X0L4YV"><img src="https://img.shields.io/badge/ko--fi-contribute-%23579ebd.svg"></a>
+<a title="Support me on Patreon :D" href="https://www.patreon.com/bePatron?u=7522179"><img src="https://img.shields.io/badge/patreon-support-%23f96854.svg"></a>
+<a title="Follow me on Twitter" href="https://twitter.com/intent/user?screen_name=glutanimate"><img src="https://img.shields.io/twitter/follow/glutanimate.svg"></a>
+</p>
 
-The add-on comes with a button and two hotkeys:
+> Annoying formatting be gone!
 
-- Clicking on the *cH* button in the editor will clean the HTML code of the active field. The same functionality can also be invoked via a custom shortcut that you can configure in the add-on config.
-- Shift-clicking the button or combining the aforementioned hotkey with Shift will undo the changes to the current field. (Anki's inbuilt undo functionality does not work with the add-on. This is a limitation that can't be solved trivially, I'm afraid.)
-- <kbd>Alt</kbd> + <kbd>V</kbd> will clean the clipboard selection and paste the processed text into the current field
+This is an add-on for the spaced-repetition flashcard app [Anki](https://apps.ankiweb.net/) that cleans and minifies the HTML content of the current field, removing extraneous tags and attributes copied over from apps like Word, Chrome, etc.
 
-## Configuration
+### Table of Contents <!-- omit in toc -->
 
-The add-on's HTML processing is highly configurable. All options can be accessed by editing the configuration section of `html_cleaner/main.py`.
+<!-- MarkdownTOC levels="1,2,3" -->
 
-## Platform Support
+- [Installation](#installation)
+- [Documentation](#documentation)
+- [Building](#building)
+- [Contributing](#contributing)
+- [License and Credits](#license-and-credits)
 
-*htmllaundry availability*
+<!-- /MarkdownTOC -->
 
-HTML processing is provided by the Bleach library on all platforms. The add-on can also be configured to use the [`htmllaundry` library](https://github.com/wichert/htmllaundry) which can improve the cleaning results under under some circumstances.
+<!-- ### Screenshots
 
-`htmllaundry` depends on `lxml` which Anki unfortunately does not ship with. In contrast to the other libraries included in this add-on, `lxml` cannot be easily be packaged for all platforms because it needs to be compiled. For that reason `htmllaundry` support is only available on Windows and Linux right now (2020-05).
+![](screenshots/screenshot.png) -->
 
-*Issues with symlinks on Linux*
+### Installation
 
-Because HTML cleaner comes with precompiled libraries on Linux, invoking the add-on from a symlinked Windows partition (e.g. NTFS) might lead to a permission error. The reason for this is that the executable bit is sometimes turned off by default for Windows partitions. If you run into this problem you can either look into adjusting your partition mounting settings or moving the add-ons directory to one of your Linux drives.
+#### AnkiWeb <!-- omit in toc -->
 
-## License and Credits
+This section will be updated once the add-on is available on AnkiWeb.
+<!-- The easiest way to install HTML Cleaner is through [AnkiWeb](https://ankiweb.net/shared/info/ANKIWEB_ID). -->
 
-*HTML Cleaner* is
+#### Manual installation <!-- omit in toc -->
 
-- *Copyright © 2016-2017 [Aristotelis P.](https://github.com/Glutanimate)*
-- *Copyright © 2020 [Arthur Milchior](arthur@milchior.fr)*
+Please click on the entry corresponding to your Anki version:
+
+<details>
+
+<summary><i>Recent Anki 2.1 versions</i></summary>
+
+<br>
+
+*Note: These instructions only work on Anki 2.1.17 and up. For older Anki releases please see the next section.*
+
+<br>
+
+1. Download the latest `.ankiaddon` file from the [releases tab](https://github.com/glutanimate/html-cleaner/releases) (you might need to click on *Assets* below the description to reveal the download links)
+2. Open the folder where your downloads are located and double-click on the downloaded `.ankiaddon` file.
+3. Follow the installation prompt and restart Anki if it asks you to
+
+</details>
+
+<details>
+
+<summary><i>Older Anki 2.1 versions</i></summary>
+
+1. Make sure you are [using at least Anki 2.1.10](https://apps.ankiweb.net/#download). Earlier releases (e.g. found in various Linux distros) do not support `.ankiaddon` packages.
+2. Download the latest `.ankiaddon` package from the [releases tab](https://github.com/glutanimate/html-cleaner/releases) (you might need to click on *Assets* below the description to reveal the download links)
+3. From Anki's main window, head to *Tools* → *Add-ons*
+4. Drag-and-drop the `.ankiaddon` package onto the add-ons list
+5. Restart Anki
+
+Video summary:
+
+<img src="https://raw.githubusercontent.com/glutanimate/docs/master/anki/add-ons/media/ankiaddon-installation-macos.gif" width=640>
+
+</details>
+
+### Documentation
+
+For further information on the use of this add-on please check out [the description text](docs/description.md) for AnkiWeb.
+
+### Building
+
+With [Anki add-on builder](https://github.com/glutanimate/anki-addon-builder/) installed:
+
+    git clone https://github.com/glutanimate/html-cleaner.git
+    cd html-cleaner
+    aab build
+
+For more information on the build process please refer to [`aab`'s documentation](https://github.com/glutanimate/anki-addon-builder/#usage).
+
+### Contributing
+
+Contributions are welcome! Please review the [contribution guidelines](./CONTRIBUTING.md) on how to:
+
+- Report issues
+- File pull requests
+- Support the project as a non-developer
+
+### License and Credits
+
+*HTML Cleaner* is 
+
+*Copyright © 2016-2020 [Aristotelis P.](https://glutanimate.com/) (Glutanimate)*
+
+*Copyright © 2020 [Arthur Milchior](arthur@milchior.fr)*
+
+*Copyright © 2020 [ijgnd](https://github.com/ijgnd)*
 
 This add-on was developed on a commission by a fellow Anki user. All credit for the original idea goes to them.
 
-Licensed under the [GNU AGPL v3](https://www.gnu.org/licenses/agpl.html).
+My heartfelt thanks goes out to Arthur and ijgnd for their major contributions in bringing this add-on to Anki 2.1 and extending it with a plethora of new features.
 
-This add-on would not not have been possible without the following open-source libraries:
+This add-on also would not not have been possible without the following open-source libraries:
 
 - [Bleach](https://github.com/mozilla/bleach) 2.0.0. Copyright (c) 2014-2017 Mozilla Foundation. Licensed under the Apache License 2.0
 - [html5lib](https://github.com/html5lib/) 0.999999999. Copyright (c) 2006-2013 James Graham and other contributors. Licensed under the MIT license.
@@ -45,3 +119,15 @@ This add-on would not not have been possible without the following open-source l
 - [lxml](http://lxml.de/) 3.7.3. Copyright (c) Infrae. Licensed under the BSD license.
 - [webencodings](https://github.com/gsnedders/python-webencodings) 0.5.1. Copyright (c) 2012-2017 Geoffrey Sneddon. Licensed under the BSD license.
 - [six](https://github.com/benjaminp/six) 1.10.0. Copyright (c) 2010-2015 Benjamin Peterson. Licensed under the MIT license
+
+HTML Cleaner is free and open-source software. The add-on code that runs within Anki is released under the GNU AGPLv3 license, extended by a number of additional terms. For more information please see the [LICENSE](https://github.com/glutanimate/html-cleaner/blob/master/LICENSE) file that accompanied this program.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+
+
+----
+
+<b>
+<div align="center">The continued development of this add-on is made possible <br>thanks to my <a href="https://www.patreon.com/glutanimate">Patreon</a> and <a href="https://ko-fi.com/X8X0L4YV">Ko-Fi</a> supporters.
+<br>You guys rock ❤️ !</div>
+</b>
